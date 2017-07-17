@@ -1,18 +1,45 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context="com.example.android.inventoryapp.MainActivity">
 
     <TextView
+        android:id="@+id/main_empty_view"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Hello World!"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        android:layout_centerInParent="true"
+        android:layout_margin="@dimen/max_margin_size"
+        android:drawablePadding="@dimen/max_margin_size"
+        android:drawableTop="@drawable/sqlite"
+        android:gravity="center"
+        android:text="@string/empty_text"
+        android:textSize="@dimen/max_text_size" />
 
-</android.support.constraint.ConstraintLayout>
+    <RelativeLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true">
+
+        <android.support.design.widget.FloatingActionButton
+            android:id="@+id/main_floating_action_button"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_centerVertical="true"
+            android:layout_margin="@dimen/max_margin_size"
+            android:backgroundTint="@color/colorAccent"
+            android:src="@drawable/ic_plus_white_48dp" />
+
+        <TextView
+            android:id="@+id/add_data_text_view"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignWithParentIfMissing="true"
+            android:layout_centerVertical="true"
+            android:layout_toStartOf="@+id/main_floating_action_button"
+            android:gravity="center_vertical"
+            android:text="@string/add_new_data" />
+    </RelativeLayout>
+</RelativeLayout>

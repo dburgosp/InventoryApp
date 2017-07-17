@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">Inventory App</string>
+    <string name="empty_text">The database is currently empty.</string>
+    <string name="add_new_data">Click here to add new data</string>
 </resources>
