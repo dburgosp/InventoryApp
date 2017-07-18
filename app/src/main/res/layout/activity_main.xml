@@ -5,8 +5,30 @@
     android:layout_height="match_parent"
     tools:context="com.example.android.inventoryapp.MainActivity">
 
+    <ListView
+        android:id="@+id/main_list_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
     <TextView
-        android:id="@+id/main_empty_view"
+        android:id="@+id/main_add_data"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="false"
+        android:layout_alignParentEnd="true"
+        android:layout_marginEnd="@dimen/max_margin_size"
+        android:layout_marginStart="@dimen/max_margin_size"
+        android:layout_marginTop="@dimen/medium_margin_size"
+        android:drawableEnd="@drawable/arrow"
+        android:drawablePadding="@dimen/medium_margin_size"
+        android:drawableTint="@color/colorAccent"
+        android:gravity="bottom"
+        android:paddingEnd="@dimen/medium_margin_size"
+        android:paddingStart="@dimen/medium_margin_size"
+        android:text="@string/add_new_data" />
+
+    <TextView
+        android:id="@+id/main_empty_database"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerInParent="true"
@@ -16,30 +38,4 @@
         android:gravity="center"
         android:text="@string/empty_text"
         android:textSize="@dimen/max_text_size" />
-
-    <RelativeLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true">
-
-        <android.support.design.widget.FloatingActionButton
-            android:id="@+id/main_floating_action_button"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_alignParentEnd="true"
-            android:layout_centerVertical="true"
-            android:layout_margin="@dimen/max_margin_size"
-            android:backgroundTint="@color/colorAccent"
-            android:src="@drawable/ic_plus_white_48dp" />
-
-        <TextView
-            android:id="@+id/add_data_text_view"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignWithParentIfMissing="true"
-            android:layout_centerVertical="true"
-            android:layout_toStartOf="@+id/main_floating_action_button"
-            android:gravity="center_vertical"
-            android:text="@string/add_new_data" />
-    </RelativeLayout>
 </RelativeLayout>

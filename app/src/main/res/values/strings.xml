@@ -1,5 +1,11 @@
 <resources>
     <string name="app_name">Inventory App</string>
-    <string name="empty_text">The database is currently empty.</string>
+
+    <!-- Texts for menu items -->
+    <string name="main_menu_delete">Delete all items</string>
+    <string name="main_menu_add">Insert new item</string>
+
+    <!-- Texts for empty database -->
+    <string name="empty_text">The inventory database is empty</string>
     <string name="add_new_data">Click here to add new data</string>
 </resources>
