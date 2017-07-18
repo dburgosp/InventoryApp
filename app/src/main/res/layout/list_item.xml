@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <ImageView
+        android:id="@id/list_item_image"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:layout_margin="@dimen/max_margin_size"
+        tools:background="@drawable/product_type_04" />
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:layout_marginBottom="@dimen/max_margin_size"
+        android:layout_marginTop="@dimen/max_margin_size"
+        android:layout_toEndOf="@+id/list_item_image"
+        android:layout_toStartOf="@+id/list_item_sale"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/list_item_product"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:ellipsize="end"
+            android:maxLines="1"
+            android:textAllCaps="true"
+            android:textStyle="bold"
+            tools:text="Product name in a single line" />
+
+        <TextView
+            android:id="@+id/list_item_provider"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:ellipsize="end"
+            android:maxLines="1"
+            tools:text="Provider name in a single line" />
+
+        <TextView
+            android:id="@+id/list_item_price"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            tools:text="Price: 0.00 €" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/list_item_sale"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_centerVertical="true"
+        android:layout_margin="@dimen/max_margin_size"
+        android:gravity="center"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/list_item_quantity"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            tools:text="Units: 100" />
+
+        <Button
+            android:id="@+id/list_item_sell"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/list_item_sale" />
+    </LinearLayout>
+</RelativeLayout>
