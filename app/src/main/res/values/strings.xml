@@ -1,4 +1,5 @@
-<resources>
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
     <string name="app_name">Inventory App for Tourist Agencies</string>
 
     <!-- Texts for menu items -->
@@ -15,4 +16,20 @@
     <string name="list_item_price">Price:</string>
     <string name="list_item_units">Units:</string>
     <string name="list_item_sale">Sell 1 unit</string>
+
+    <!-- Texts for activity_products.xml layout -->
+    <string name="product_data">Product data:</string>
+    <string name="product_name">Product name</string>
+    <string name="product_image">Select image</string>
+    <string name="product_description">Product description</string>
+    <string name="stock_data">Units in stock:</string>
+    <string name="supplier_name">Supplier name</string>
+    <string name="supplier_email">Supplier email</string>
+    <string name="supplier_order_quantity">Order quantity:</string>
+    <string name="supplier_order_button">Order <xliff:g example="2" id="number">%d</xliff:g> unit<xliff:g example="(s)" id="string">%s</xliff:g></string>
+    <string name="supplier_data">Supplier data:</string>
+    <string name="supplier_name">Supplier name</string>
+    <string name="supplier_email">Supplier email</string>
+    <string name="supplier_order_quantity">Order quantity:</string>
+    <string name="supplier_order_button">Order <xliff:g example="2" id="number">%d</xliff:g> unit<xliff:g example="(s)" id="string">%s</xliff:g></string>
 </resources>

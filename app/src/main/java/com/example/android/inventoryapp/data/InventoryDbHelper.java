@@ -39,8 +39,8 @@ public class InventoryDbHelper extends SQLiteOpenHelper {
                 ProductsEntry.COLUMN_NAME_IMAGE + " " + ProductsEntry.COLUMN_TYPE_IMAGE + " " + ProductsEntry.COLUMN_CONSTRAINTS_IMAGE + ", " +
                 ProductsEntry.COLUMN_NAME_PRICE + " " + ProductsEntry.COLUMN_TYPE_PRICE + " " + ProductsEntry.COLUMN_CONSTRAINTS_PRICE + ", " +
                 ProductsEntry.COLUMN_NAME_QUANTITY + " " + ProductsEntry.COLUMN_TYPE_QUANTITY + " " + ProductsEntry.COLUMN_CONSTRAINTS_QUANTITY + ", " +
-                ProductsEntry.COLUMN_NAME_PROVIDERCONTACT + " " + ProductsEntry.COLUMN_TYPE_PROVIDERCONTACT + " " + ProductsEntry.COLUMN_CONSTRAINTS_PROVIDERCONTACT + ", " +
-                ProductsEntry.COLUMN_NAME_PROVIDEREMAIL + " " + ProductsEntry.COLUMN_TYPE_PROVIDEREMAIL + " " + ProductsEntry.COLUMN_CONSTRAINTS_PROVIDEREMAIL + ")";
+                ProductsEntry.COLUMN_NAME_SUPPLIERCONTACT + " " + ProductsEntry.COLUMN_TYPE_SUPPLIERCONTACT + " " + ProductsEntry.COLUMN_CONSTRAINTS_SUPPLIERCONTACT + ", " +
+                ProductsEntry.COLUMN_NAME_SUPPLIEREMAIL + " " + ProductsEntry.COLUMN_TYPE_SUPPLIEREMAIL + " " + ProductsEntry.COLUMN_CONSTRAINTS_SUPPLIEREMAIL + ")";
 
         // Execute the SQL statement.
         db.execSQL(SQL_CREATE_ENTRIES);

@@ -10,10 +10,10 @@ import android.provider.BaseColumns;
 
 public final class InventoryContract {
 
-    // Name for the content provider.
+    // Name for the content supplier.
     public static final String CONTENT_AUTHORITY = "com.example.android.inventoryapp";
 
-    // Base content URI to contact the content provider.
+    // Base content URI to contact the content supplier.
     public static final Uri BASE_CONTENT_URI = Uri.parse("content://" + CONTENT_AUTHORITY);
 
     // Available paths, appended to base content URI for possible URI's. In this project we are
@@ -39,12 +39,12 @@ public final class InventoryContract {
      * image (INTEGER NOT NULL DEFAULT 1) is the index of the image, relative to a drawable resource.
      * price (INTEGER NOT NULL DEFAULT 0) is the price of the product, stored in cents of euro.
      * current_quantity (INTEGER NOT NULL DEFAULT 0) is the current amount of units of the product in the inventory.
-     * provider_name (TEXT NOT NULL) is the name of the provider of the product.
-     * provider_email (TEXT NOT NULL) is the email address of the provider of the product.
+     * supplier_name (TEXT NOT NULL) is the name of the supplier of the product.
+     * supplier_email (TEXT NOT NULL) is the email address of the supplier of the product.
      */
     public static final class ProductsEntry implements BaseColumns {
 
-        // Content URI to access the product data in the provider.
+        // Content URI to access the product data in the supplier.
         public static final Uri CONTENT_URI = Uri.withAppendedPath(BASE_CONTENT_URI, PATH_PRODUCTS);
 
         // MIME type of the CONTENT_URI for a single product.
@@ -63,8 +63,8 @@ public final class InventoryContract {
         public final static String COLUMN_NAME_IMAGE = "image";
         public final static String COLUMN_NAME_PRICE = "price";
         public final static String COLUMN_NAME_QUANTITY = "current_quantity";
-        public final static String COLUMN_NAME_PROVIDERCONTACT = "provider_name";
-        public final static String COLUMN_NAME_PROVIDEREMAIL = "provider_address";
+        public final static String COLUMN_NAME_SUPPLIERCONTACT = "supplier_name";
+        public final static String COLUMN_NAME_SUPPLIEREMAIL = "supplier_address";
 
         // Data types of the columns.
         public final static String COLUMN_TYPE_ID = "INTEGER";
@@ -73,8 +73,8 @@ public final class InventoryContract {
         public final static String COLUMN_TYPE_IMAGE = "INTEGER";
         public final static String COLUMN_TYPE_PRICE = "INTEGER";
         public final static String COLUMN_TYPE_QUANTITY = "INTEGER";
-        public final static String COLUMN_TYPE_PROVIDERCONTACT = "TEXT";
-        public final static String COLUMN_TYPE_PROVIDEREMAIL = "TEXT";
+        public final static String COLUMN_TYPE_SUPPLIERCONTACT = "TEXT";
+        public final static String COLUMN_TYPE_SUPPLIEREMAIL = "TEXT";
 
         // Constraints of the columns.
         public final static String COLUMN_CONSTRAINTS_ID = "PRIMARY KEY AUTOINCREMENT";
@@ -83,8 +83,8 @@ public final class InventoryContract {
         public final static String COLUMN_CONSTRAINTS_IMAGE = "NOT NULL DEFAULT 1";
         public final static String COLUMN_CONSTRAINTS_PRICE = "NOT NULL DEFAULT 0";
         public final static String COLUMN_CONSTRAINTS_QUANTITY = "NOT NULL DEFAULT 0";
-        public final static String COLUMN_CONSTRAINTS_PROVIDERCONTACT = "NOT NULL";
-        public final static String COLUMN_CONSTRAINTS_PROVIDEREMAIL = "NOT NULL";
+        public final static String COLUMN_CONSTRAINTS_SUPPLIERCONTACT = "NOT NULL";
+        public final static String COLUMN_CONSTRAINTS_SUPPLIEREMAIL = "NOT NULL";
 
         // Possible image types for the tourist product.
         public static final int IMAGE_TYPE_HOTELS = 1;

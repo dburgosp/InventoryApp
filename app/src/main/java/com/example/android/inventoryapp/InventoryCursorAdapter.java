@@ -52,7 +52,7 @@ public class InventoryCursorAdapter extends CursorAdapter {
     public void bindView(View view, Context context, Cursor cursor) {
         // Read the Cursor and get current product information.
         String product = cursor.getString(cursor.getColumnIndex(ProductsEntry.COLUMN_NAME_PRODUCT));
-        String provider = cursor.getString(cursor.getColumnIndex(ProductsEntry.COLUMN_NAME_PROVIDERCONTACT));
+        String provider = cursor.getString(cursor.getColumnIndex(ProductsEntry.COLUMN_NAME_SUPPLIERCONTACT));
         int price = cursor.getInt(cursor.getColumnIndex(ProductsEntry.COLUMN_NAME_PRICE));
         int quantity = cursor.getInt(cursor.getColumnIndex(ProductsEntry.COLUMN_NAME_QUANTITY));
 
