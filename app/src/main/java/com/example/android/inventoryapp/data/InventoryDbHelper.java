@@ -4,7 +4,7 @@ import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
-import com.example.android.inventoryapp.data.InventoryContract.ProductsEntry;
+import com.example.android.inventoryapp.data.InventoryContract.ProductEntry;
 
 /**
  * Created by David on 18/07/2017.
@@ -32,15 +32,15 @@ public class InventoryDbHelper extends SQLiteOpenHelper {
     @Override
     public void onCreate(SQLiteDatabase db) {
         // SQL statement for creating the "products" table.
-        String SQL_CREATE_ENTRIES = "CREATE TABLE " + ProductsEntry.TABLE_NAME + " (" +
-                ProductsEntry.COLUMN_NAME_ID + " " + ProductsEntry.COLUMN_TYPE_ID + " " + ProductsEntry.COLUMN_CONSTRAINTS_ID + ", " +
-                ProductsEntry.COLUMN_NAME_PRODUCT + " " + ProductsEntry.COLUMN_TYPE_PRODUCT + " " + ProductsEntry.COLUMN_CONSTRAINTS_PRODUCT + ", " +
-                ProductsEntry.COLUMN_NAME_DESCRIPTION + " " + ProductsEntry.COLUMN_TYPE_DESCRIPTION + " " + ProductsEntry.COLUMN_CONSTRAINTS_DESCRIPTION + ", " +
-                ProductsEntry.COLUMN_NAME_IMAGE + " " + ProductsEntry.COLUMN_TYPE_IMAGE + " " + ProductsEntry.COLUMN_CONSTRAINTS_IMAGE + ", " +
-                ProductsEntry.COLUMN_NAME_PRICE + " " + ProductsEntry.COLUMN_TYPE_PRICE + " " + ProductsEntry.COLUMN_CONSTRAINTS_PRICE + ", " +
-                ProductsEntry.COLUMN_NAME_QUANTITY + " " + ProductsEntry.COLUMN_TYPE_QUANTITY + " " + ProductsEntry.COLUMN_CONSTRAINTS_QUANTITY + ", " +
-                ProductsEntry.COLUMN_NAME_SUPPLIERCONTACT + " " + ProductsEntry.COLUMN_TYPE_SUPPLIERCONTACT + " " + ProductsEntry.COLUMN_CONSTRAINTS_SUPPLIERCONTACT + ", " +
-                ProductsEntry.COLUMN_NAME_SUPPLIEREMAIL + " " + ProductsEntry.COLUMN_TYPE_SUPPLIEREMAIL + " " + ProductsEntry.COLUMN_CONSTRAINTS_SUPPLIEREMAIL + ")";
+        String SQL_CREATE_ENTRIES = "CREATE TABLE " + ProductEntry.TABLE_NAME + " (" +
+                ProductEntry.COLUMN_NAME_ID + " " + ProductEntry.COLUMN_TYPE_ID + " " + ProductEntry.COLUMN_CONSTRAINTS_ID + ", " +
+                ProductEntry.COLUMN_NAME_PRODUCT + " " + ProductEntry.COLUMN_TYPE_PRODUCT + " " + ProductEntry.COLUMN_CONSTRAINTS_PRODUCT + ", " +
+                ProductEntry.COLUMN_NAME_DESCRIPTION + " " + ProductEntry.COLUMN_TYPE_DESCRIPTION + " " + ProductEntry.COLUMN_CONSTRAINTS_DESCRIPTION + ", " +
+                ProductEntry.COLUMN_NAME_IMAGE + " " + ProductEntry.COLUMN_TYPE_IMAGE + " " + ProductEntry.COLUMN_CONSTRAINTS_IMAGE + ", " +
+                ProductEntry.COLUMN_NAME_PRICE + " " + ProductEntry.COLUMN_TYPE_PRICE + " " + ProductEntry.COLUMN_CONSTRAINTS_PRICE + ", " +
+                ProductEntry.COLUMN_NAME_QUANTITY + " " + ProductEntry.COLUMN_TYPE_QUANTITY + " " + ProductEntry.COLUMN_CONSTRAINTS_QUANTITY + ", " +
+                ProductEntry.COLUMN_NAME_SUPPLIERCONTACT + " " + ProductEntry.COLUMN_TYPE_SUPPLIERCONTACT + " " + ProductEntry.COLUMN_CONSTRAINTS_SUPPLIERCONTACT + ", " +
+                ProductEntry.COLUMN_NAME_SUPPLIEREMAIL + " " + ProductEntry.COLUMN_TYPE_SUPPLIEREMAIL + " " + ProductEntry.COLUMN_CONSTRAINTS_SUPPLIEREMAIL + ")";
 
         // Execute the SQL statement.
         db.execSQL(SQL_CREATE_ENTRIES);

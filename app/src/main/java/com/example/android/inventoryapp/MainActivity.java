@@ -16,7 +16,7 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
 
-import com.example.android.inventoryapp.data.InventoryContract.ProductsEntry;
+import com.example.android.inventoryapp.data.InventoryContract.ProductEntry;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -67,7 +67,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            case R.id.main_menu_add:
+            case R.id.main_menu_insert:
                 // Navigate to the edit product activity, for inserting a new product.
                 Intent intent = new Intent(MainActivity.this, ProductActivity.class);
                 startActivity(intent);
@@ -75,7 +75,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
 
             case R.id.main_menu_clear:
                 // Delete all products in the database.
-                getContentResolver().delete(ProductsEntry.CONTENT_URI, null, null);
+                getContentResolver().delete(ProductEntry.CONTENT_URI, null, null);
                 return true;
         }
         return super.onOptionsItemSelected(item);
@@ -93,16 +93,16 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
         // Define a projection to show the columns of the table "products" that we need for the
         // ListView.
         String[] projection = {
-                ProductsEntry._ID,
-                ProductsEntry.COLUMN_NAME_PRODUCT,          // Name of the product.
-                ProductsEntry.COLUMN_NAME_IMAGE,            // Product image.
-                ProductsEntry.COLUMN_NAME_PRICE,            // Price of the product.
-                ProductsEntry.COLUMN_NAME_SUPPLIERCONTACT,  // Name of the supplier.
-                ProductsEntry.COLUMN_NAME_QUANTITY};       // Current units in stock.
+                ProductEntry._ID,
+                ProductEntry.COLUMN_NAME_PRODUCT,          // Name of the product.
+                ProductEntry.COLUMN_NAME_IMAGE,            // Product image.
+                ProductEntry.COLUMN_NAME_PRICE,            // Price of the product.
+                ProductEntry.COLUMN_NAME_SUPPLIERCONTACT,  // Name of the supplier.
+                ProductEntry.COLUMN_NAME_QUANTITY};       // Current units in stock.
 
         // Execute the ContentProvider's query method on a background thread.
         return new CursorLoader(this,       // Parent activity context.
-                ProductsEntry.CONTENT_URI,  // Provider content URI to query.
+                ProductEntry.CONTENT_URI,  // Provider content URI to query.
                 projection,                 // Columns to include in the resulting Cursor.
                 null,                       // No selection clause.
                 null,                       // No selection arguments.
@@ -153,7 +153,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
 
                 // Create the URI "content://com.example.android.inventoryapp/products/id" and save
                 // it into the data field of the intent.
-                intent.setData(ContentUris.withAppendedId(ProductsEntry.CONTENT_URI, id));
+                intent.setData(ContentUris.withAppendedId(ProductEntry.CONTENT_URI, id));
 
                 // Navigate to the edit product activity, for editing the current product.
                 startActivity(intent);

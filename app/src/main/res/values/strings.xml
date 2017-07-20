@@ -21,7 +21,6 @@
     <string name="product_data_title">Product data</string>
     <string name="product_name_hint">Product name</string>
     <string name="product_name_title">Name:</string>
-    <string name="product_image_hint">Select image</string>
     <string name="product_image_title">Image:</string>
     <string name="product_description_hint">Product description</string>
     <string name="product_description_title">Description:</string>
@@ -45,6 +44,7 @@
     <string name="product_activity_update_title">Edit product</string>
 
     <!-- Elements for the image spinner -->
+    <string name="image_type_none">Select image</string>
     <string name="image_type_hotels">Hotels</string>
     <string name="image_type_night">Night</string>
     <string name="image_type_shopping">Shopping</string>
@@ -54,4 +54,21 @@
     <string name="image_type_leisure">Leisure</string>
     <string name="image_type_transport">Transport</string>
     <string name="image_type_culture">Culture</string>
+
+    <!-- Texts for showing results in a Toast -->
+    <string name="toast_product_insertion_ok">New product inserted into database</string>
+    <string name="toast_product_insertion_error">Error inserting new product into database</string>
+    <string name="toast_product_update_ok">Product updated correctly</string>
+    <string name="toast_product_update_error">Error updating product</string>
+    <string name="toast_missing_product_name">Product name must not be empty</string>
+    <string name="toast_missing_product_price">Product price must not be empty</string>
+    <string name="toast_missing_product_image">You must select an image</string>
+    <string name="toast_invalid_product_image">Product image is not valid</string>
+    <string name="toast_missing_supplier_name">Supplier name must not be empty</string>
+    <string name="toast_missing_supplier_email">Supplier e-mail must not be empty</string>
+
+    <!-- Texts for alert dialogs -->
+    <string name="dialog_unsaved_changes">There are unsaved changes. Do you really want to discard them?</string>
+    <string name="dialog_unsaved_changes_positive">Yes, discard unsaved changes</string>
+    <string name="dialog_unsaved_changes_negative">No, I want to keep on editing</string>
 </resources>

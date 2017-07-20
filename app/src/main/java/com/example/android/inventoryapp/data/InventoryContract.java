@@ -5,6 +5,7 @@ package com.example.android.inventoryapp.data;
  */
 
 import android.content.ContentResolver;
+import android.content.ContentValues;
 import android.net.Uri;
 import android.provider.BaseColumns;
 
@@ -36,13 +37,13 @@ public final class InventoryContract {
      * _id (INTEGER PRIMARY KEY AUTOINCREMENT) is the index of the table.
      * name (TEXT NOT NULL) is the name of the product.
      * description (TEXT) is the optional description of the product.
-     * image (INTEGER NOT NULL DEFAULT 1) is the index of the image, relative to a drawable resource.
+     * image (TEXT NOT NULL DEFAULT 1) is the index of the image, relative to a drawable resource.
      * price (INTEGER NOT NULL DEFAULT 0) is the price of the product, stored in cents of euro.
      * current_quantity (INTEGER NOT NULL DEFAULT 0) is the current amount of units of the product in the inventory.
      * supplier_name (TEXT NOT NULL) is the name of the supplier of the product.
      * supplier_email (TEXT NOT NULL) is the email address of the supplier of the product.
      */
-    public static final class ProductsEntry implements BaseColumns {
+    public static final class ProductEntry implements BaseColumns {
 
         // Content URI to access the product data in the supplier.
         public static final Uri CONTENT_URI = Uri.withAppendedPath(BASE_CONTENT_URI, PATH_PRODUCTS);
@@ -70,7 +71,7 @@ public final class InventoryContract {
         public final static String COLUMN_TYPE_ID = "INTEGER";
         public final static String COLUMN_TYPE_PRODUCT = "TEXT";
         public final static String COLUMN_TYPE_DESCRIPTION = "TEXT";
-        public final static String COLUMN_TYPE_IMAGE = "INTEGER";
+        public final static String COLUMN_TYPE_IMAGE = "TEXT";
         public final static String COLUMN_TYPE_PRICE = "INTEGER";
         public final static String COLUMN_TYPE_QUANTITY = "INTEGER";
         public final static String COLUMN_TYPE_SUPPLIERCONTACT = "TEXT";
@@ -80,23 +81,31 @@ public final class InventoryContract {
         public final static String COLUMN_CONSTRAINTS_ID = "PRIMARY KEY AUTOINCREMENT";
         public final static String COLUMN_CONSTRAINTS_PRODUCT = "NOT NULL";
         public final static String COLUMN_CONSTRAINTS_DESCRIPTION = "";
-        public final static String COLUMN_CONSTRAINTS_IMAGE = "NOT NULL DEFAULT 1";
+        public final static String COLUMN_CONSTRAINTS_IMAGE = "NOT NULL DEFAULT \"image_type_none\"";
         public final static String COLUMN_CONSTRAINTS_PRICE = "NOT NULL DEFAULT 0";
         public final static String COLUMN_CONSTRAINTS_QUANTITY = "NOT NULL DEFAULT 0";
         public final static String COLUMN_CONSTRAINTS_SUPPLIERCONTACT = "NOT NULL";
         public final static String COLUMN_CONSTRAINTS_SUPPLIEREMAIL = "NOT NULL";
 
         // Possible image types for the tourist product.
-        public static final int IMAGE_TYPE_NONE = 0;
-        public static final int IMAGE_TYPE_HOTELS = 1;
-        public static final int IMAGE_TYPE_NIGHT = 2;
-        public static final int IMAGE_TYPE_SHOPPING = 3;
-        public static final int IMAGE_TYPE_VISITS = 4;
-        public static final int IMAGE_TYPE_SHOWS = 5;
-        public static final int IMAGE_TYPE_RESTAURANTS = 6;
-        public static final int IMAGE_TYPE_LEISURE = 7;
-        public static final int IMAGE_TYPE_TRANSPORT = 8;
-        public static final int IMAGE_TYPE_CULTURE = 9;
+        public static final String IMAGE_TYPE_NONE = "image_type_none";
+        public static final String IMAGE_TYPE_HOTELS = "image_type_hotels";
+        public static final String IMAGE_TYPE_NIGHT = "image_type_night";
+        public static final String IMAGE_TYPE_SHOPPING = "image_type_shopping";
+        public static final String IMAGE_TYPE_VISITS = "image_type_visits";
+        public static final String IMAGE_TYPE_SHOWS = "image_type_shows";
+        public static final String IMAGE_TYPE_RESTAURANTS = "image_type_restaurants";
+        public static final String IMAGE_TYPE_LEISURE = "image_type_leisure";
+        public static final String IMAGE_TYPE_TRANSPORT = "image_type_transport";
+        public static final String IMAGE_TYPE_CULTURE = "image_type_culture";
+        // Possible results when inserting, updating or deleting this table.
+        public static final int SQL_OK = 1;
+        public static final int SQL_ERROR_PRODUCT_NAME = -1;
+        public static final int SQL_ERROR_PRODUCT_IMAGE = -2;
+        public static final int SQL_ERROR_PRODUCT_IMAGE_INVALID = -3;
+        public static final int SQL_ERROR_PRODUCT_PRICE = -4;
+        public static final int SQL_ERROR_SUPPLIER_NAME = -5;
+        public static final int SQL_ERROR_SUPPLIER_EMAIL = -6;
 
         /**
          * Determines whether an image type is valid or not.
@@ -104,7 +113,7 @@ public final class InventoryContract {
          * @param imageType is the type of the image.
          * @return true if the image type represents a valid tourist product, false otherwise.
          */
-        public static boolean isValidImage(int imageType) {
+        public static boolean isValidImage(String imageType) {
             switch (imageType) {
                 case IMAGE_TYPE_HOTELS:
                 case IMAGE_TYPE_NIGHT:
@@ -122,6 +131,83 @@ public final class InventoryContract {
                     // Return false otherwise.
                     return false;
             }
+        }
+
+        /**
+         * Helper method to check whether all the required content values are present or not.
+         *
+         * @param contentValues is the set of column_name/value pairs to add to the database.
+         * @return SQL_OK if all the required content values are present and valid
+         * SQL_ERROR_PRODUCT_NAME if the product name is missing.
+         * SQL_ERROR_PRODUCT_IMAGE if the product image is missing.
+         * SQL_ERROR_PRODUCT_IMAGE_INVALID if the product image is not valid.
+         * SQL_ERROR_PRODUCT_PRICE if the product price is missing.
+         * SQL_ERROR_SUPPLIER_NAME if the supplier name is missing.
+         * SQL_ERROR_SUPPLIER_EMAIL if the supplier email is missing.
+         */
+        public static int checkContentValues(ContentValues contentValues) {
+            String data;
+
+            // Check product name.
+            if (contentValues.containsKey(COLUMN_NAME_PRODUCT)) {
+                // Column name COLUMN_NAME_PRODUCT is always present when inserting a new product, but
+                // may be not present when updating an existing product.
+                data = contentValues.getAsString(COLUMN_NAME_PRODUCT);
+                if (data.isEmpty()) {
+                    // If present, product name must not be empty.
+                    return SQL_ERROR_PRODUCT_NAME;
+                }
+            }
+
+            // Check product price.
+            if (contentValues.containsKey(COLUMN_NAME_PRICE)) {
+                // Column name COLUMN_NAME_PRICE is always present when inserting a new product, but may
+                // be not present when updating an existing product.
+                data = contentValues.getAsString(COLUMN_NAME_PRICE);
+                if (data.isEmpty() || (data.equals("0"))) {
+                    // If present, product price must not be empty or zero.
+                    return SQL_ERROR_PRODUCT_PRICE;
+                }
+            }
+
+            // Check image.
+            if (contentValues.containsKey(COLUMN_NAME_IMAGE)) {
+                // Column name COLUMN_NAME_IMAGE is always present when inserting a new product, but may
+                // be not present when updating an existing product.
+                data = contentValues.getAsString(COLUMN_NAME_IMAGE);
+                if (data.isEmpty()) {
+                    // If present, image must not be empty.
+                    return SQL_ERROR_PRODUCT_IMAGE;
+                } else if (!isValidImage(data)) {
+                    // If present and has no null value, image must be valid.
+                    return SQL_ERROR_PRODUCT_IMAGE_INVALID;
+                }
+            }
+
+            // Check supplier name.
+            if (contentValues.containsKey(COLUMN_NAME_SUPPLIERCONTACT)) {
+                // Column name COLUMN_NAME_SUPPLIERCONTACT is always present when inserting a new
+                // product, but may be not present when updating an existing product.
+                data = contentValues.getAsString(COLUMN_NAME_SUPPLIERCONTACT);
+                if (data.isEmpty()) {
+                    // If present, supplier name must not be empty.
+                    return SQL_ERROR_SUPPLIER_NAME;
+                }
+            }
+
+            // Check supplier e-mail.
+            if (contentValues.containsKey(COLUMN_NAME_SUPPLIEREMAIL)) {
+                // Column name COLUMN_NAME_SUPPLIEREMAIL is always present when inserting a new
+                // product, but may be not present when updating an existing product.
+                data = contentValues.getAsString(COLUMN_NAME_SUPPLIEREMAIL);
+                if (data.isEmpty()) {
+                    // If present, supplier email must not be empty.
+                    return SQL_ERROR_SUPPLIER_EMAIL;
+                }
+            }
+
+            // Default value.
+            return SQL_OK;
         }
     }
 }

@@ -10,9 +10,12 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CursorAdapter;
+import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.example.android.inventoryapp.data.InventoryContract.ProductsEntry;
+import com.example.android.inventoryapp.data.InventoryContract.ProductEntry;
+
+import java.text.DecimalFormat;
 
 public class InventoryCursorAdapter extends CursorAdapter {
 
@@ -51,22 +54,28 @@ public class InventoryCursorAdapter extends CursorAdapter {
     @Override
     public void bindView(View view, Context context, Cursor cursor) {
         // Read the Cursor and get current product information.
-        String product = cursor.getString(cursor.getColumnIndex(ProductsEntry.COLUMN_NAME_PRODUCT));
-        String provider = cursor.getString(cursor.getColumnIndex(ProductsEntry.COLUMN_NAME_SUPPLIERCONTACT));
-        int price = cursor.getInt(cursor.getColumnIndex(ProductsEntry.COLUMN_NAME_PRICE));
-        int quantity = cursor.getInt(cursor.getColumnIndex(ProductsEntry.COLUMN_NAME_QUANTITY));
+        String product = cursor.getString(cursor.getColumnIndex(ProductEntry.COLUMN_NAME_PRODUCT));
+        String image = cursor.getString(cursor.getColumnIndex(ProductEntry.COLUMN_NAME_IMAGE));
+        String provider = cursor.getString(cursor.getColumnIndex(ProductEntry.COLUMN_NAME_SUPPLIERCONTACT));
+        Float price = cursor.getFloat(cursor.getColumnIndex(ProductEntry.COLUMN_NAME_PRICE));
+        int quantity = cursor.getInt(cursor.getColumnIndex(ProductEntry.COLUMN_NAME_QUANTITY));
 
         // Show product name.
         TextView productTextView = (TextView) view.findViewById(R.id.list_item_product);
         productTextView.setText(product);
 
+        // Show image.
+        ImageView productImageView = (ImageView) view.findViewById(R.id.list_item_image);
+        productImageView.setImageDrawable(context.getDrawable(context.getResources().getIdentifier(image, "drawable", context.getPackageName())));
+
         // Show product provider name.
         TextView providerTextView = (TextView) view.findViewById(R.id.list_item_provider);
         providerTextView.setText(provider);
 
-        // Show price for the product.
+        // Show price for the product. Prices are stored in euro cents, but displayed as euros (2 decimals).
         TextView priceTextView = (TextView) view.findViewById(R.id.list_item_price);
-        priceTextView.setText(context.getResources().getString(R.string.list_item_price) + " " + price / 100 + " €");
+        DecimalFormat form = new DecimalFormat("0.00");
+        priceTextView.setText(context.getResources().getString(R.string.list_item_price) + " " + form.format(price / 100) + " €");
 
         // Show current quantity for the product.
         TextView quantityTextView = (TextView) view.findViewById(R.id.list_item_quantity);

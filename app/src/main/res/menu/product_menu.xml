@@ -5,11 +5,13 @@
     tools:context=".ProductActivity">
 
     <item
+        android:id="@+id/product_menu_delete"
         android:icon="@drawable/ic_database_minus_white_48dp"
         android:title="@string/edit_menu_delete"
         app:showAsAction="ifRoom" />
 
     <item
+        android:id="@+id/product_menu_save"
         android:icon="@drawable/ic_save_white_48dp"
         android:title="@string/edit_menu_validate"
         app:showAsAction="ifRoom" />

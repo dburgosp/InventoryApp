@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string-array name="array_image_type">
+        <item>@string/image_type_none</item>
         <item>@string/image_type_culture</item>
         <item>@string/image_type_hotels</item>
         <item>@string/image_type_leisure</item>

@@ -10,7 +10,7 @@ import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.util.Log;
 
-import com.example.android.inventoryapp.data.InventoryContract.ProductsEntry;
+import com.example.android.inventoryapp.data.InventoryContract.ProductEntry;
 
 /**
  * Created by David on 18/07/2017.
@@ -77,15 +77,15 @@ public class InventoryProvider extends ContentProvider {
             case PRODUCTS:
                 // Query the products table to produce a Cursor containing multiple rows of the
                 // products table.
-                cursor = database.query(ProductsEntry.TABLE_NAME, projection, selection, selectionArgs, null, null, sortOrder);
+                cursor = database.query(ProductEntry.TABLE_NAME, projection, selection, selectionArgs, null, null, sortOrder);
                 break;
 
             case PRODUCT_ID:
                 // Query the products table selecting a single product. The _ID for that product is
                 // taken from selectionArgs.
-                selection = ProductsEntry._ID + "=?";
+                selection = ProductEntry._ID + "=?";
                 selectionArgs = new String[]{String.valueOf(ContentUris.parseId(uri))};
-                cursor = database.query(ProductsEntry.TABLE_NAME, projection, selection, selectionArgs, null, null, sortOrder);
+                cursor = database.query(ProductEntry.TABLE_NAME, projection, selection, selectionArgs, null, null, sortOrder);
                 break;
 
             default:
@@ -120,18 +120,9 @@ public class InventoryProvider extends ContentProvider {
         long itemId;
         switch (uriMatcher.match(uri)) {
             case PRODUCTS:
-                try {
-                    // Check data from given ContentValues object.
-                    checkContentValues(contentValues);
-                } catch (IllegalArgumentException e) {
-                    // Not every required content value is not null or valid.
-                    Log.i(LOG_TAG, "Failed checking content values for insertion: " + e);
-                    return null;
-                }
-
                 // Insert the new product and get the id for the newly inserted item.
                 SQLiteDatabase database = inventoryDbHelper.getWritableDatabase();
-                itemId = database.insert(ProductsEntry.TABLE_NAME, null, contentValues);
+                itemId = database.insert(ProductEntry.TABLE_NAME, null, contentValues);
                 if (itemId == -1) {
                     // Error inserting the new product.
                     Log.e(LOG_TAG, "Error inserting new product: " + uri);
@@ -174,7 +165,7 @@ public class InventoryProvider extends ContentProvider {
         switch (uriMatcher.match(uri)) {
 
             case PRODUCT_ID: // Update a single product. The product _ID is taken from selectionArgs.
-                selection = ProductsEntry._ID + "=?";
+                selection = ProductEntry._ID + "=?";
                 selectionArgs = new String[]{String.valueOf(ContentUris.parseId(uri))};
 
                 // ... go on into case PRODUCTS.
@@ -182,19 +173,16 @@ public class InventoryProvider extends ContentProvider {
 
             case PRODUCTS: // Update a group of products.
 
-                try {
-                    // Check data from given ContentValues object.
-                    if (contentValues.size() == 0) return 0;
-                    checkContentValues(contentValues);
-                } catch (IllegalArgumentException e) {
-                    // Not every required content value is not null or valid.
-                    Log.i(LOG_TAG, "Failed checking content values for update: " + e);
+                // Check data from given ContentValues object.
+                if (contentValues.size() == 0) {
+                    // There's nothing to update.
+                    Log.i(LOG_TAG, "Nothing to update: " + uri);
                     return 0;
                 }
 
                 // Perform the update on the database and return the number of rows affected.
                 SQLiteDatabase database = inventoryDbHelper.getWritableDatabase();
-                rowsUpdated = database.update(ProductsEntry.TABLE_NAME, contentValues, selection, selectionArgs);
+                rowsUpdated = database.update(ProductEntry.TABLE_NAME, contentValues, selection, selectionArgs);
                 break;
 
             default:
@@ -233,14 +221,14 @@ public class InventoryProvider extends ContentProvider {
         SQLiteDatabase database = inventoryDbHelper.getWritableDatabase();
         switch (uriMatcher.match(uri)) {
             case PRODUCT_ID: // Delete a single product. The product _ID is taken from selectionArgs.
-                selection = ProductsEntry._ID + "=?";
+                selection = ProductEntry._ID + "=?";
                 selectionArgs = new String[]{String.valueOf(ContentUris.parseId(uri))};
 
                 // ... go on into case PRODUCTS.
                 //break;
 
             case PRODUCTS: // Delete all rows that match the selection and selection args.
-                rowsDeleted = database.delete(ProductsEntry.TABLE_NAME, selection, selectionArgs);
+                rowsDeleted = database.delete(ProductEntry.TABLE_NAME, selection, selectionArgs);
                 break;
 
             default:
@@ -274,57 +262,13 @@ public class InventoryProvider extends ContentProvider {
     public String getType(@NonNull Uri uri) {
         switch (uriMatcher.match(uri)) {
             case PRODUCTS:
-                return ProductsEntry.CONTENT_LIST_TYPE;
+                return ProductEntry.CONTENT_LIST_TYPE;
 
             case PRODUCT_ID:
-                return ProductsEntry.CONTENT_ITEM_TYPE;
+                return ProductEntry.CONTENT_ITEM_TYPE;
 
             default:
                 return null;
-        }
-    }
-
-    /**
-     * Helper method to check whether all the required content values are present or not.
-     *
-     * @param contentValues is the set of column_name/value pairs to add to the database.
-     * @throws IllegalArgumentException if not every element in content values is present or valid.
-     */
-    private void checkContentValues(ContentValues contentValues) throws IllegalArgumentException {
-        // Check product name.
-        if (contentValues.containsKey(ProductsEntry.COLUMN_NAME_PRODUCT)) {
-            // Column name COLUMN_NAME_PRODUCT is always present when inserting a new product, but
-            // may be not present when updating an existing product.
-            String name = contentValues.getAsString(ProductsEntry.COLUMN_NAME_PRODUCT);
-            if (name == null) {
-                // If present, product name must not be null.
-                throw new IllegalArgumentException("Product name must not be null");
-            }
-        }
-
-        // Check image.
-        if (contentValues.containsKey(ProductsEntry.COLUMN_NAME_IMAGE)) {
-            // Column name COLUMN_NAME_IMAGE is always present when inserting a new product, but may
-            // be not present when updating an existing product.
-            Integer image = contentValues.getAsInteger(ProductsEntry.COLUMN_NAME_IMAGE);
-            if (image == null) {
-                // If present, image must not be null.
-                throw new IllegalArgumentException("Product image must not be null");
-            } else if (!ProductsEntry.isValidImage(image)) {
-                // If present and has no null value, image must be valid.
-                throw new IllegalArgumentException("Product image is not valid");
-            }
-        }
-
-        // Check supplier name.
-        if (contentValues.containsKey(ProductsEntry.COLUMN_NAME_SUPPLIERCONTACT)) {
-            // Column name COLUMN_NAME_SUPPLIERCONTACT is always present when inserting a new
-            // product, but may be not present when updating an existing product.
-            String name = contentValues.getAsString(ProductsEntry.COLUMN_NAME_SUPPLIERCONTACT);
-            if (name == null) {
-                // If present, supplier name must not be null.
-                throw new IllegalArgumentException("Provider name must not be null");
-            }
         }
     }
 }
