@@ -18,7 +18,7 @@ public final class InventoryContract {
 
     // Available paths, appended to base content URI for possible URI's. In this project we are
     // considering a very simple inventory database with a single table, "products", so it will be
-    // only available the path "content://om.example.android.inventoryapp/products" for accessing
+    // only available the path "content://com.example.android.inventoryapp/products" for accessing
     // elements of that table.
     public static final String PATH_PRODUCTS = "products";
 
@@ -87,6 +87,7 @@ public final class InventoryContract {
         public final static String COLUMN_CONSTRAINTS_SUPPLIEREMAIL = "NOT NULL";
 
         // Possible image types for the tourist product.
+        public static final int IMAGE_TYPE_NONE = 0;
         public static final int IMAGE_TYPE_HOTELS = 1;
         public static final int IMAGE_TYPE_NIGHT = 2;
         public static final int IMAGE_TYPE_SHOPPING = 3;

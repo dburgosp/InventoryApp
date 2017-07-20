@@ -18,26 +18,27 @@ import com.example.android.inventoryapp.data.InventoryContract.ProductsEntry;
 
 public class InventoryProvider extends ContentProvider {
 
-    // Creates the root node of the URI tree.
+    private static final String LOG_TAG = InventoryProvider.class.getSimpleName();  // String for logcat.
+
+    // Create the root node of the URI tree.
     private static final UriMatcher uriMatcher = new UriMatcher(UriMatcher.NO_MATCH);
 
     private static final int PRODUCTS = 0;   // URI matcher code for the content URI for the products table.
     private static final int PRODUCT_ID = 1; // URI matcher code for the content URI for a single product.
-    private static final String LOG_TAG = InventoryProvider.class.getSimpleName();  // String for logcat.
 
     // Build up a tree of UriMatcher objects.
     static {
-        // The content URI of the form "content://com.example.android.products/products" will map to
-        // the integer code PRODUCTS.
+        // The content URI of the form "content://com.example.android.inventoryapp/products" will
+        // map to the integer code PRODUCTS.
         uriMatcher.addURI(InventoryContract.CONTENT_AUTHORITY, InventoryContract.PATH_PRODUCTS, PRODUCTS);
 
-        // The content URI of the form "content://com.example.android.products/products/#" will map
-        // to the integer code PRODUCT_ID. This URI is used to provide access to ONE single row of
-        // the products table.
+        // The content URI of the form "content://com.example.android.inventoryapp/products/#" will
+        // map to the integer code PRODUCT_ID. This URI is used to provide access to ONE single row
+        // of the products table.
         uriMatcher.addURI(InventoryContract.CONTENT_AUTHORITY, InventoryContract.PATH_PRODUCTS + "/#", PRODUCT_ID);
     }
 
-    private InventoryDbHelper inventoryDbHelper;                                    // Database helper object.
+    private InventoryDbHelper inventoryDbHelper;    // Database helper object.
 
     /**
      * Initialize the content provider on startup.

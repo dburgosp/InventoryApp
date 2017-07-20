@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="array_image_type">
+        <item>@string/image_type_culture</item>
+        <item>@string/image_type_hotels</item>
+        <item>@string/image_type_leisure</item>
+        <item>@string/image_type_night</item>
+        <item>@string/image_type_restaurants</item>
+        <item>@string/image_type_shopping</item>
+        <item>@string/image_type_shows</item>
+        <item>@string/image_type_transport</item>
+        <item>@string/image_type_visits</item>
+    </string-array>
+</resources>
