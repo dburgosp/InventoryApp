@@ -42,6 +42,7 @@ public final class InventoryContract {
      * current_quantity (INTEGER NOT NULL DEFAULT 0) is the current amount of units of the product in the inventory.
      * supplier_name (TEXT NOT NULL) is the name of the supplier of the product.
      * supplier_email (TEXT NOT NULL) is the email address of the supplier of the product.
+     * supplier_order_quantity (INTEGER DEFAULT 1) is the default number of units for setting orders to the product supplier..
      */
     public static final class ProductEntry implements BaseColumns {
 
@@ -64,8 +65,9 @@ public final class InventoryContract {
         public final static String COLUMN_NAME_IMAGE = "image";
         public final static String COLUMN_NAME_PRICE = "price";
         public final static String COLUMN_NAME_QUANTITY = "current_quantity";
-        public final static String COLUMN_NAME_SUPPLIERCONTACT = "supplier_name";
-        public final static String COLUMN_NAME_SUPPLIEREMAIL = "supplier_address";
+        public final static String COLUMN_NAME_SUPPLIER_CONTACT = "supplier_name";
+        public final static String COLUMN_NAME_SUPPLIER_EMAIL = "supplier_address";
+        public final static String COLUMN_NAME_SUPPLIER_ORDER_QUANTITY = "supplier_order_quantity";
 
         // Data types of the columns.
         public final static String COLUMN_TYPE_ID = "INTEGER";
@@ -74,8 +76,9 @@ public final class InventoryContract {
         public final static String COLUMN_TYPE_IMAGE = "TEXT";
         public final static String COLUMN_TYPE_PRICE = "INTEGER";
         public final static String COLUMN_TYPE_QUANTITY = "INTEGER";
-        public final static String COLUMN_TYPE_SUPPLIERCONTACT = "TEXT";
-        public final static String COLUMN_TYPE_SUPPLIEREMAIL = "TEXT";
+        public final static String COLUMN_TYPE_SUPPLIER_CONTACT = "TEXT";
+        public final static String COLUMN_TYPE_SUPPLIER_EMAIL = "TEXT";
+        public final static String COLUMN_TYPE_SUPPLIER_ORDER_QUANTITY = "INTEGER";
 
         // Constraints of the columns.
         public final static String COLUMN_CONSTRAINTS_ID = "PRIMARY KEY AUTOINCREMENT";
@@ -84,8 +87,9 @@ public final class InventoryContract {
         public final static String COLUMN_CONSTRAINTS_IMAGE = "NOT NULL DEFAULT \"image_type_none\"";
         public final static String COLUMN_CONSTRAINTS_PRICE = "NOT NULL DEFAULT 0";
         public final static String COLUMN_CONSTRAINTS_QUANTITY = "NOT NULL DEFAULT 0";
-        public final static String COLUMN_CONSTRAINTS_SUPPLIERCONTACT = "NOT NULL";
-        public final static String COLUMN_CONSTRAINTS_SUPPLIEREMAIL = "NOT NULL";
+        public final static String COLUMN_CONSTRAINTS_SUPPLIER_CONTACT = "NOT NULL";
+        public final static String COLUMN_CONSTRAINTS_SUPPLIER_EMAIL = "NOT NULL";
+        public final static String COLUMN_CONSTRAINTS_SUPPLIER_ORDER_QUANTITY = "DEFAULT 1";
 
         // Possible image types for the tourist product.
         public static final String IMAGE_TYPE_NONE = "image_type_none";
@@ -98,6 +102,7 @@ public final class InventoryContract {
         public static final String IMAGE_TYPE_LEISURE = "image_type_leisure";
         public static final String IMAGE_TYPE_TRANSPORT = "image_type_transport";
         public static final String IMAGE_TYPE_CULTURE = "image_type_culture";
+
         // Possible results when inserting, updating or deleting this table.
         public static final int SQL_OK = 1;
         public static final int SQL_ERROR_PRODUCT_NAME = -1;
@@ -106,6 +111,7 @@ public final class InventoryContract {
         public static final int SQL_ERROR_PRODUCT_PRICE = -4;
         public static final int SQL_ERROR_SUPPLIER_NAME = -5;
         public static final int SQL_ERROR_SUPPLIER_EMAIL = -6;
+        public static final int SQL_ERROR_SUPPLIER_ORDER_QUANTITY = -7;
 
         /**
          * Determines whether an image type is valid or not.
@@ -144,6 +150,7 @@ public final class InventoryContract {
          * SQL_ERROR_PRODUCT_PRICE if the product price is missing.
          * SQL_ERROR_SUPPLIER_NAME if the supplier name is missing.
          * SQL_ERROR_SUPPLIER_EMAIL if the supplier email is missing.
+         * SQL_ERROR_SUPPLIER_ORDER_QUANTITY if the supplier email is missing.
          */
         public static int checkContentValues(ContentValues contentValues) {
             String data;
@@ -185,10 +192,10 @@ public final class InventoryContract {
             }
 
             // Check supplier name.
-            if (contentValues.containsKey(COLUMN_NAME_SUPPLIERCONTACT)) {
-                // Column name COLUMN_NAME_SUPPLIERCONTACT is always present when inserting a new
+            if (contentValues.containsKey(COLUMN_NAME_SUPPLIER_CONTACT)) {
+                // Column name COLUMN_NAME_SUPPLIER_CONTACT is always present when inserting a new
                 // product, but may be not present when updating an existing product.
-                data = contentValues.getAsString(COLUMN_NAME_SUPPLIERCONTACT);
+                data = contentValues.getAsString(COLUMN_NAME_SUPPLIER_CONTACT);
                 if (data.isEmpty()) {
                     // If present, supplier name must not be empty.
                     return SQL_ERROR_SUPPLIER_NAME;
@@ -196,13 +203,24 @@ public final class InventoryContract {
             }
 
             // Check supplier e-mail.
-            if (contentValues.containsKey(COLUMN_NAME_SUPPLIEREMAIL)) {
-                // Column name COLUMN_NAME_SUPPLIEREMAIL is always present when inserting a new
+            if (contentValues.containsKey(COLUMN_NAME_SUPPLIER_EMAIL)) {
+                // Column name COLUMN_NAME_SUPPLIER_EMAIL is always present when inserting a new
                 // product, but may be not present when updating an existing product.
-                data = contentValues.getAsString(COLUMN_NAME_SUPPLIEREMAIL);
+                data = contentValues.getAsString(COLUMN_NAME_SUPPLIER_EMAIL);
                 if (data.isEmpty()) {
                     // If present, supplier email must not be empty.
                     return SQL_ERROR_SUPPLIER_EMAIL;
+                }
+            }
+
+            // Check number of units for new orders to supplier.
+            if (contentValues.containsKey(COLUMN_NAME_SUPPLIER_ORDER_QUANTITY)) {
+                // Column name COLUMN_NAME_SUPPLIER_ORDER_QUANTITY is always present when inserting a
+                // new product, but may be not present when updating an existing product.
+                data = contentValues.getAsString(COLUMN_NAME_SUPPLIER_ORDER_QUANTITY);
+                if (data.isEmpty()) {
+                    // If present, number of units for new orders to supplier must not be empty.
+                    return SQL_ERROR_SUPPLIER_ORDER_QUANTITY;
                 }
             }
 

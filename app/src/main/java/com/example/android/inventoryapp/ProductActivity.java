@@ -3,8 +3,8 @@ package com.example.android.inventoryapp;
 import android.app.AlertDialog;
 import android.app.LoaderManager;
 import android.content.ContentValues;
+import android.content.CursorLoader;
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.content.Loader;
 import android.database.Cursor;
 import android.net.Uri;
@@ -12,6 +12,7 @@ import android.os.Bundle;
 import android.support.v4.app.NavUtils;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
+import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -19,20 +20,23 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.android.inventoryapp.data.InventoryContract.ProductEntry;
+
+import java.text.DecimalFormat;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
 public class ProductActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Cursor> {
 
-    private static final int INVENTORY_LOADER = 0;            // Identifier for the loader.
     // Annotate fields with @BindView and views ID for Butter Knife to find and automatically cast
     // the corresponding views.
     @BindView(R.id.product_name_edit_text)
@@ -43,19 +47,28 @@ public class ProductActivity extends AppCompatActivity implements LoaderManager.
     EditText productDescriptionEditText;
     @BindView(R.id.product_image_spinner)
     Spinner productImageSpinner;
+    @BindView(R.id.product_quantity_text_view)
+    TextView productQuantityTextView;
     @BindView(R.id.product_supplier_edit_text)
     EditText supplierNameEditText;
     @BindView(R.id.product_email_supplier_edit_text)
     EditText supplierEmailEditText;
     @BindView(R.id.product_image)
     ImageView productImageView;
-    @BindView(R.id.product_stock_layout)
+    @BindView(R.id.product_quantity_layout)
     LinearLayout productStockLayout;
     @BindView(R.id.product_supplier_order_layout)
-    LinearLayout productSupplierOrderLayout;
-    private Uri currentProductUri = null;                     // URI of the current product, if exists one.
-    private boolean unsavedChanges = false;                   // true if we are editing or creating a product.
-    private String imageType = ProductEntry.IMAGE_TYPE_NONE;  // Current image type selected on spinner.
+    LinearLayout supplierOrderLayout;
+    @BindView(R.id.product_supplier_order_quantity)
+    EditText supplierOrderQuantityEditText;
+    @BindView(R.id.product_supplier_order_button)
+    Button supplierOrderButton;
+
+    private static final int INVENTORY_LOADER = 0;              // Identifier for the loader.
+    private Uri currentProductUri = null;                       // URI of the current product, if exists one.
+    private boolean unsavedChanges = false;                     // true if we are editing or creating a product.
+    private String imageType = ProductEntry.IMAGE_TYPE_NONE;    // Current image type selected on spinner.
+    private int orderQuantity = 1;                              // Number of units to order.
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -64,7 +77,7 @@ public class ProductActivity extends AppCompatActivity implements LoaderManager.
         ButterKnife.bind(this);
 
         getOperationType();     // Determine if we are trying to insert or to update a product.
-        setOnTouchListeners();  // Setup OnTouchListeners to determine if there is unsaved data.
+        setOnChangeListeners(); // Setup OnTouchListeners and OnKeyListeners to determine if there is unsaved data.
         setImageSpinner();      // Setup image selection spinner.
     }
 
@@ -90,28 +103,22 @@ public class ProductActivity extends AppCompatActivity implements LoaderManager.
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            case R.id.product_menu_save:    // Save current product.
+            case R.id.product_menu_save:
+                // Save current product.
                 if (saveProduct()) finish();
                 return true;
 
-            case R.id.product_menu_delete:  // Delete current product.
-                //showDeleteConfirmationDialog();
+            case R.id.product_menu_delete:
+                // Delete current product.
+                warnForDeletion();
                 return true;
 
-            case android.R.id.home:         // "Back" arrow on the action bar has been clicked.
-                if (!unsavedChanges) {
-                    // There are no unsaved changes. Go back.
-                    NavUtils.navigateUpFromSameTask(ProductActivity.this);
-                } else {
-                    // There are unsaved changes. Show a dialog to warn the user.
-                    warnForUnsavedChanges(new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialogInterface, int i) {
-                            // Discard changes and navigate to parent activity.
-                            NavUtils.navigateUpFromSameTask(ProductActivity.this);
-                        }
-                    });
-                }
+            case android.R.id.home:
+                // "Back" arrow on the action bar has been clicked.
+                if (!unsavedChanges)
+                    NavUtils.navigateUpFromSameTask(ProductActivity.this); // There are no unsaved changes. Go back.
+                else
+                    warnForUnsavedChanges(); // There are unsaved changes. Show a dialog to warn the user.
                 return true;
         }
         return super.onOptionsItemSelected(item);
@@ -122,19 +129,8 @@ public class ProductActivity extends AppCompatActivity implements LoaderManager.
      */
     @Override
     public void onBackPressed() {
-        if (!unsavedChanges) {
-            // There are no unsaved changes. Go back.
-            super.onBackPressed();
-        } else {
-            // There are unsaved changes. Show a dialog to warn the user.
-            warnForUnsavedChanges(new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialogInterface, int i) {
-                    // Discard changes and close this activity.
-                    finish();
-                }
-            });
-        }
+        if (!unsavedChanges) super.onBackPressed(); // There are no unsaved changes. Go back.
+        else warnForUnsavedChanges(); // There are unsaved changes. Show a dialog to warn the user.
     }
 
     /**
@@ -165,7 +161,25 @@ public class ProductActivity extends AppCompatActivity implements LoaderManager.
      */
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-        return null;
+        // Define a projection to show the columns of the table "products" that we need.
+        String[] projection = {
+                ProductEntry._ID,
+                ProductEntry.COLUMN_NAME_PRODUCT,                  // Name of the product.
+                ProductEntry.COLUMN_NAME_IMAGE,                    // Product image.
+                ProductEntry.COLUMN_NAME_PRICE,                    // Price of the product.
+                ProductEntry.COLUMN_NAME_DESCRIPTION,              // Description of the product.
+                ProductEntry.COLUMN_NAME_QUANTITY,                 // Current units in stock.
+                ProductEntry.COLUMN_NAME_SUPPLIER_CONTACT,         // Name of the supplier.
+                ProductEntry.COLUMN_NAME_SUPPLIER_EMAIL,           // E-mail of the supplier.
+                ProductEntry.COLUMN_NAME_SUPPLIER_ORDER_QUANTITY}; // Quantity for orders.
+
+        // Execute the ContentProvider's query method on a background thread.
+        return new CursorLoader(this,   // Parent activity context.
+                currentProductUri,      // URI for retrieving data of the current product..
+                projection,             // Columns to include in the resulting Cursor.
+                null,                   // No selection clause.
+                null,                   // No selection arguments.
+                null);                  // Default sort order.
     }
 
     /**
@@ -176,50 +190,173 @@ public class ProductActivity extends AppCompatActivity implements LoaderManager.
      */
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
+        // Move to the first row of the cursor.
+        if (data.moveToFirst()) {
+            // Show product name.
+            productNameEditText.setText(data.getString(data.getColumnIndex(ProductEntry.COLUMN_NAME_PRODUCT)));
+
+            // Show price for the product. Prices are stored in euro cents, but displayed as euros
+            // (2 decimals).
+            Float price = data.getFloat(data.getColumnIndex(ProductEntry.COLUMN_NAME_PRICE));
+            DecimalFormat form = new DecimalFormat("0.00");
+            productPriceEditText.setText(form.format(price / 100));
+
+            // Show product description.
+            productDescriptionEditText.setText(data.getString(data.getColumnIndex(ProductEntry.COLUMN_NAME_DESCRIPTION)));
+
+            // Show image and set the correct selection in the image type spinner.
+            String image = data.getString(data.getColumnIndex(ProductEntry.COLUMN_NAME_IMAGE));
+            productImageView.setImageDrawable(getDrawable(getResources().getIdentifier(image, "drawable", getPackageName())));
+            switch (image) {
+                case ProductEntry.IMAGE_TYPE_CULTURE:
+                    productImageSpinner.setSelection(1);
+                    break;
+
+                case ProductEntry.IMAGE_TYPE_HOTELS:
+                    productImageSpinner.setSelection(2);
+                    break;
+
+                case ProductEntry.IMAGE_TYPE_LEISURE:
+                    productImageSpinner.setSelection(3);
+                    break;
+
+                case ProductEntry.IMAGE_TYPE_NIGHT:
+                    productImageSpinner.setSelection(4);
+                    break;
+
+                case ProductEntry.IMAGE_TYPE_RESTAURANTS:
+                    productImageSpinner.setSelection(5);
+                    break;
+
+                case ProductEntry.IMAGE_TYPE_SHOPPING:
+                    productImageSpinner.setSelection(6);
+                    break;
+
+                case ProductEntry.IMAGE_TYPE_SHOWS:
+                    productImageSpinner.setSelection(7);
+                    break;
+
+                case ProductEntry.IMAGE_TYPE_TRANSPORT:
+                    productImageSpinner.setSelection(8);
+                    break;
+
+                case ProductEntry.IMAGE_TYPE_VISITS:
+                    productImageSpinner.setSelection(9);
+                    break;
+
+                default:
+                    productImageSpinner.setSelection(0);
+                    break;
+            }
+
+            // Show current quantity for the product.
+            productStockLayout.setVisibility(View.VISIBLE);
+            productQuantityTextView.setText(Integer.toString(data.getInt(data.getColumnIndex(ProductEntry.COLUMN_NAME_QUANTITY))));
+
+            // Show product provider name.
+            supplierNameEditText.setText(data.getString(data.getColumnIndex(ProductEntry.COLUMN_NAME_SUPPLIER_CONTACT)));
+
+            // Show product provider e-mail.
+            supplierEmailEditText.setText(data.getString(data.getColumnIndex(ProductEntry.COLUMN_NAME_SUPPLIER_EMAIL)));
+
+            // Show number of units for ordering to the supplier.
+            supplierOrderLayout.setVisibility(View.VISIBLE);
+            orderQuantity = data.getInt(data.getColumnIndex(ProductEntry.COLUMN_NAME_SUPPLIER_ORDER_QUANTITY));
+            supplierOrderQuantityEditText.setText(Integer.toString(orderQuantity));
+            if (orderQuantity > 1)
+                supplierOrderButton.setText(getResources().getString(R.string.supplier_order_button, orderQuantity, "(s)"));
+            else
+                supplierOrderButton.setText(getResources().getString(R.string.supplier_order_button, 1, ""));
+        }
     }
 
     /**
-     * Called when a previously created loader is being reset, and thus
-     * making its data unavailable.  The application should at this point
-     * remove any references it has to the Loader's data.
+     * Called when a previously created loader is being reset, and thus making its data unavailable.
+     * The application should at this point remove any references it has to the Loader's data.
      *
      * @param loader The Loader that is being reset.
      */
     @Override
     public void onLoaderReset(Loader<Cursor> loader) {
+        // Reset product name.
+        productNameEditText.setText("");
+
+        // Reset price for the product.
+        productPriceEditText.setText("");
+
+        // Reset product description.
+        productDescriptionEditText.setText("");
+
+        // Reset image and image type spinner.
+        productImageView.setImageDrawable(getDrawable(R.drawable.image_type_none));
+        productImageSpinner.setSelection(0);
+
+        // Reset product provider name.
+        supplierNameEditText.setText("");
+
+        // Reset product provider e-mail.
+        supplierEmailEditText.setText("");
+
+        // Hide unwanted layout elements.
+        productStockLayout.setVisibility(View.GONE);
+        supplierOrderLayout.setVisibility(View.GONE);
     }
 
     /**
      * Helper method to determine if we are inserting a new product or updating an existing one.
      */
     private void getOperationType() {
-        Intent intent = getIntent();
-        currentProductUri = intent.getData();
+        currentProductUri = getIntent().getData();
         if (currentProductUri == null) {
             // Data is null, so there's no URI to edit a product. We are inserting a new one.
             setTitle(getString(R.string.product_activity_insert_title));
             productStockLayout.setVisibility(View.GONE);
-            productSupplierOrderLayout.setVisibility(View.GONE);
+            supplierOrderLayout.setVisibility(View.GONE);
         } else {
             // The intent was created when clicking a list item, so we are editing an exiting
             // product.
             setTitle(getString(R.string.product_activity_update_title));
             productStockLayout.setVisibility(View.VISIBLE);
-            productSupplierOrderLayout.setVisibility(View.VISIBLE);
+            supplierOrderLayout.setVisibility(View.VISIBLE);
             getLoaderManager().initLoader(INVENTORY_LOADER, null, this);
         }
     }
 
     /**
-     * Helper method to setup OnTouchListeners on all the input fields, in order to determine if
-     * there is currently unsaved data.
+     * Helper method to setup OnKeyListeners and OnTouchListeners on all the input fields, in order
+     * to determine if there is currently unsaved data.
      */
-    private void setOnTouchListeners() {
+    private void setOnChangeListeners() {
+        // Create an OnKeyListener for setting unsavedChanges to true.
+        View.OnKeyListener OnKeyListener = new View.OnKeyListener() {
+            /**
+             * Called when a hardware key is dispatched to a view.
+             *
+             * @param v       is the view the key has been dispatched to.
+             * @param keyCode is the code for the physical key that was pressed.
+             * @param event   is the KeyEvent object containing full information about the event.
+             * @return true if the listener has consumed the event, false otherwise.
+             */
+            @Override
+            public boolean onKey(View v, int keyCode, KeyEvent event) {
+                unsavedChanges = true;
+                return false;
+            }
+        };
+
+        // Setup OnKeyListeners on all the input fields.
+        productNameEditText.setOnKeyListener(OnKeyListener);
+        productPriceEditText.setOnKeyListener(OnKeyListener);
+        productDescriptionEditText.setOnKeyListener(OnKeyListener);
+        supplierNameEditText.setOnKeyListener(OnKeyListener);
+        supplierEmailEditText.setOnKeyListener(OnKeyListener);
+        supplierOrderQuantityEditText.setOnKeyListener(OnKeyListener);
+
         // Create an OnTouchListener for setting unsavedChanges to true.
         View.OnTouchListener onTouchListener = new View.OnTouchListener() {
             /**
-             * Called when a touch event is dispatched to a view. This allows listeners to get a chance
-             * to respond before the target view.
+             * Called when a touch event is dispatched to a view. This allows listeners to get a
+             * chance to respond before the target view.
              *
              * @param view        is the view the touch event has been dispatched to.
              * @param motionEvent is the MotionEvent object containing full information about the event.
@@ -232,13 +369,8 @@ public class ProductActivity extends AppCompatActivity implements LoaderManager.
             }
         };
 
-        // Setup OnTouchListeners on all the input fields.
-        productNameEditText.setOnTouchListener(onTouchListener);
-        productPriceEditText.setOnTouchListener(onTouchListener);
-        productDescriptionEditText.setOnTouchListener(onTouchListener);
+        // Setup OnTouchListeners on the image spinner.
         productImageSpinner.setOnTouchListener(onTouchListener);
-        supplierNameEditText.setOnTouchListener(onTouchListener);
-        supplierEmailEditText.setOnTouchListener(onTouchListener);
     }
 
     private void setImageSpinner() {
@@ -261,9 +393,7 @@ public class ProductActivity extends AppCompatActivity implements LoaderManager.
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 String selection = (String) parent.getItemAtPosition(position);
-                if (TextUtils.isEmpty(selection)) {
-                    productImageSpinner.setPrompt("PROMPT");
-                } else {
+                if (!TextUtils.isEmpty(selection)) {
                     if (selection.equals(getString(R.string.image_type_culture))) {
                         // The tourist product is a culture product.
                         imageType = ProductEntry.IMAGE_TYPE_CULTURE;
@@ -328,8 +458,8 @@ public class ProductActivity extends AppCompatActivity implements LoaderManager.
         values.put(ProductEntry.COLUMN_NAME_PRODUCT, productNameEditText.getText().toString().trim());
         values.put(ProductEntry.COLUMN_NAME_DESCRIPTION, productDescriptionEditText.getText().toString().trim());
         values.put(ProductEntry.COLUMN_NAME_IMAGE, imageType);
-        values.put(ProductEntry.COLUMN_NAME_SUPPLIERCONTACT, supplierNameEditText.getText().toString().trim());
-        values.put(ProductEntry.COLUMN_NAME_SUPPLIEREMAIL, supplierEmailEditText.getText().toString().trim());
+        values.put(ProductEntry.COLUMN_NAME_SUPPLIER_CONTACT, supplierNameEditText.getText().toString().trim());
+        values.put(ProductEntry.COLUMN_NAME_SUPPLIER_EMAIL, supplierEmailEditText.getText().toString().trim());
         String productPrice = productPriceEditText.getText().toString().trim();
         if (TextUtils.isEmpty(productPrice))
             // Set price to 0 if it is empty.
@@ -370,6 +500,11 @@ public class ProductActivity extends AppCompatActivity implements LoaderManager.
                 Toast.makeText(this, getString(R.string.toast_missing_supplier_email), Toast.LENGTH_SHORT).show();
                 supplierEmailEditText.requestFocus();
                 return false;
+
+            case ProductEntry.SQL_ERROR_SUPPLIER_ORDER_QUANTITY: // Supplier order quantity is missing.
+                Toast.makeText(this, getString(R.string.toast_missing_supplier_order_quantity), Toast.LENGTH_SHORT).show();
+                supplierOrderQuantityEditText.requestFocus();
+                return false;
         }
 
         // Determine whether we are inserting a new product or editing an existing one.
@@ -382,7 +517,7 @@ public class ProductActivity extends AppCompatActivity implements LoaderManager.
                 return false;
             } else {
                 // Insertion ok.
-                Toast.makeText(this, getString(R.string.toast_product_insertion_ok) + ": " + newProductURI, Toast.LENGTH_LONG).show();
+                Toast.makeText(this, getString(R.string.toast_product_insertion_ok) + ": \n\n" + newProductURI, Toast.LENGTH_LONG).show();
                 return true;
             }
         } else {
@@ -402,15 +537,18 @@ public class ProductActivity extends AppCompatActivity implements LoaderManager.
 
     /**
      * Helper method to display an alert dialog to warn the user about unsaved changes.
-     *
-     * @param positiveButtonClickListener is the ClickListener triggered when positive button is
-     *                                    clicked on the alert dialog.
      */
-    private void warnForUnsavedChanges(DialogInterface.OnClickListener positiveButtonClickListener) {
+    private void warnForUnsavedChanges() {
         // Show a dialog that notifies the user they have unsaved changes.
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setMessage(R.string.dialog_unsaved_changes);
-        builder.setPositiveButton(R.string.dialog_unsaved_changes_positive, positiveButtonClickListener);
+        builder.setPositiveButton(R.string.dialog_unsaved_changes_positive, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                // Discard changes and close this activity.
+                finish();
+            }
+        });
         builder.setNegativeButton(R.string.dialog_unsaved_changes_negative, new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int id) {
                 // Close this dialog and keep on editing.
@@ -419,5 +557,46 @@ public class ProductActivity extends AppCompatActivity implements LoaderManager.
         });
         AlertDialog alertDialog = builder.create();
         alertDialog.show();
+    }
+
+    /**
+     * Helper method to display an alert dialog to warn the user about deletion.
+     */
+    private void warnForDeletion() {
+        // Show a dialog that asks user for confirmation on deletion.
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setMessage(R.string.dialog_product_deletion);
+        builder.setPositiveButton(R.string.dialog_product_deletion_positive, new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
+                // Deletion confirmed.
+                deleteProduct();
+                finish();
+            }
+        });
+        builder.setNegativeButton(R.string.dialog_product_deletion_negative, new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
+                // Deletion cancelled.
+                if (dialog != null) dialog.dismiss();
+            }
+        });
+        AlertDialog alertDialog = builder.create();
+        alertDialog.show();
+    }
+
+    /**
+     * Helper method to delete the current product.
+     */
+    private void deleteProduct() {
+        if (currentProductUri != null) {
+            // Ask the ContentResolver for deleting the current product.
+            int rowsDeleted = getContentResolver().delete(currentProductUri, null, null);
+            if (rowsDeleted == 0) {
+                // Deletion failed
+                Toast.makeText(this, getString(R.string.toast_product_deletion_error), Toast.LENGTH_SHORT).show();
+            } else {
+                // Deletion ok.
+                Toast.makeText(this, getString(R.string.toast_product_deletion_ok), Toast.LENGTH_SHORT).show();
+            }
+        }
     }
 }

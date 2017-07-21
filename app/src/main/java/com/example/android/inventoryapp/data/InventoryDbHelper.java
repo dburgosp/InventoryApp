@@ -39,8 +39,9 @@ public class InventoryDbHelper extends SQLiteOpenHelper {
                 ProductEntry.COLUMN_NAME_IMAGE + " " + ProductEntry.COLUMN_TYPE_IMAGE + " " + ProductEntry.COLUMN_CONSTRAINTS_IMAGE + ", " +
                 ProductEntry.COLUMN_NAME_PRICE + " " + ProductEntry.COLUMN_TYPE_PRICE + " " + ProductEntry.COLUMN_CONSTRAINTS_PRICE + ", " +
                 ProductEntry.COLUMN_NAME_QUANTITY + " " + ProductEntry.COLUMN_TYPE_QUANTITY + " " + ProductEntry.COLUMN_CONSTRAINTS_QUANTITY + ", " +
-                ProductEntry.COLUMN_NAME_SUPPLIERCONTACT + " " + ProductEntry.COLUMN_TYPE_SUPPLIERCONTACT + " " + ProductEntry.COLUMN_CONSTRAINTS_SUPPLIERCONTACT + ", " +
-                ProductEntry.COLUMN_NAME_SUPPLIEREMAIL + " " + ProductEntry.COLUMN_TYPE_SUPPLIEREMAIL + " " + ProductEntry.COLUMN_CONSTRAINTS_SUPPLIEREMAIL + ")";
+                ProductEntry.COLUMN_NAME_SUPPLIER_CONTACT + " " + ProductEntry.COLUMN_TYPE_SUPPLIER_CONTACT + " " + ProductEntry.COLUMN_CONSTRAINTS_SUPPLIER_CONTACT + ", " +
+                ProductEntry.COLUMN_NAME_SUPPLIER_EMAIL + " " + ProductEntry.COLUMN_TYPE_SUPPLIER_EMAIL + " " + ProductEntry.COLUMN_CONSTRAINTS_SUPPLIER_EMAIL + ", " +
+                ProductEntry.COLUMN_NAME_SUPPLIER_ORDER_QUANTITY + " " + ProductEntry.COLUMN_TYPE_SUPPLIER_ORDER_QUANTITY + " " + ProductEntry.COLUMN_CONSTRAINTS_SUPPLIER_ORDER_QUANTITY + ")";
 
         // Execute the SQL statement.
         db.execSQL(SQL_CREATE_ENTRIES);

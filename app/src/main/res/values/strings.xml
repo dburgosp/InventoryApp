@@ -66,9 +66,20 @@
     <string name="toast_invalid_product_image">Product image is not valid</string>
     <string name="toast_missing_supplier_name">Supplier name must not be empty</string>
     <string name="toast_missing_supplier_email">Supplier e-mail must not be empty</string>
+    <string name="toast_missing_supplier_order_quantity">Supplier order quantity must not be empty</string>
+    <string name="toast_product_deletion_ok">Product deleted correctly</string>
+    <string name="toast_product_deletion_error">Error deleting product</string>
+    <string name="toast_database_deletion_ok">Database cleared. All products have been deleted.</string>
+    <string name="toast_database_deletion_error">Error clearing database information</string>
 
     <!-- Texts for alert dialogs -->
+    <string name="dialog_database_deletion">Are you really sure to delete all the products? All database information will be lost and you will not be able to undo this operation.</string>
+    <string name="dialog_database_deletion_positive">Yes, I want to clear the database</string>
+    <string name="dialog_database_deletion_negative">No, cancel deletion!!!</string>
     <string name="dialog_unsaved_changes">There are unsaved changes. Do you really want to discard them?</string>
     <string name="dialog_unsaved_changes_positive">Yes, discard unsaved changes</string>
     <string name="dialog_unsaved_changes_negative">No, I want to keep on editing</string>
+    <string name="dialog_product_deletion">Are you really sure to delete the current product?</string>
+    <string name="dialog_product_deletion_positive">Yes, I want to delete it</string>
+    <string name="dialog_product_deletion_negative">No, cancel deletion</string>
 </resources>

@@ -1,8 +1,10 @@
 package com.example.android.inventoryapp;
 
+import android.app.AlertDialog;
 import android.app.LoaderManager;
 import android.content.ContentUris;
 import android.content.CursorLoader;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.Loader;
 import android.database.Cursor;
@@ -15,6 +17,7 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
+import android.widget.Toast;
 
 import com.example.android.inventoryapp.data.InventoryContract.ProductEntry;
 
@@ -23,13 +26,14 @@ import butterknife.ButterKnife;
 
 public class MainActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Cursor> {
 
-    private static final int INVENTORY_LOADER = 0;  // Identifier for the loader.
     // Annotate fields with @BindView and views ID for Butter Knife to find and automatically cast
     // the corresponding views.
     @BindView(R.id.main_empty_database)
     RelativeLayout emptyDatabaseTextView;
     @BindView(R.id.main_list_view)
     ListView mainListView;
+
+    private static final int INVENTORY_LOADER = 0;  // Identifier for the loader.
     InventoryCursorAdapter inventoryCursorAdapter;  // Adapter for the ListView.
 
     @Override
@@ -38,11 +42,8 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
 
-        // Set the List View.
-        setMainListView();
-
-        // Init the loader.
-        getLoaderManager().initLoader(INVENTORY_LOADER, null, this);
+        setMainListView();                                              // Set the List View.
+        getLoaderManager().initLoader(INVENTORY_LOADER, null, this);    // Init the loader.
     }
 
     /**
@@ -75,7 +76,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
 
             case R.id.main_menu_clear:
                 // Delete all products in the database.
-                getContentResolver().delete(ProductEntry.CONTENT_URI, null, null);
+                warnForClearDatabase();
                 return true;
         }
         return super.onOptionsItemSelected(item);
@@ -97,12 +98,12 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
                 ProductEntry.COLUMN_NAME_PRODUCT,          // Name of the product.
                 ProductEntry.COLUMN_NAME_IMAGE,            // Product image.
                 ProductEntry.COLUMN_NAME_PRICE,            // Price of the product.
-                ProductEntry.COLUMN_NAME_SUPPLIERCONTACT,  // Name of the supplier.
-                ProductEntry.COLUMN_NAME_QUANTITY};       // Current units in stock.
+                ProductEntry.COLUMN_NAME_SUPPLIER_CONTACT, // Name of the supplier.
+                ProductEntry.COLUMN_NAME_QUANTITY};        // Current units in stock.
 
         // Execute the ContentProvider's query method on a background thread.
         return new CursorLoader(this,       // Parent activity context.
-                ProductEntry.CONTENT_URI,  // Provider content URI to query.
+                ProductEntry.CONTENT_URI,   // Provider content URI to query.
                 projection,                 // Columns to include in the resulting Cursor.
                 null,                       // No selection clause.
                 null,                       // No selection arguments.
@@ -138,12 +139,12 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
      * Helper method to set the List View in which the products are going to be shown.
      */
     private void setMainListView() {
+        // Set the view to show when the list is empty.
+        mainListView.setEmptyView(emptyDatabaseTextView);
+
         // Setup an Adapter to create a list item for each row of product data in the Cursor.
         inventoryCursorAdapter = new InventoryCursorAdapter(this, null);
         mainListView.setAdapter(inventoryCursorAdapter);
-
-        // Set the view to show when the list is empty.
-        mainListView.setEmptyView(emptyDatabaseTextView);
 
         // Define behaviour of every list item.
         mainListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -159,5 +160,43 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
                 startActivity(intent);
             }
         });
+    }
+
+    /**
+     * Helper method to display an alert dialog to warn the user about deletion.
+     */
+    private void warnForClearDatabase() {
+        // Show a dialog that asks user for confirmation on deletion.
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setMessage(R.string.dialog_database_deletion);
+        builder.setPositiveButton(R.string.dialog_database_deletion_positive, new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
+                // Deletion confirmed.
+                clearDatabase();
+            }
+        });
+        builder.setNegativeButton(R.string.dialog_database_deletion_negative, new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
+                // Deletion cancelled.
+                if (dialog != null) dialog.dismiss();
+            }
+        });
+        AlertDialog alertDialog = builder.create();
+        alertDialog.show();
+    }
+
+
+    /**
+     * Helper method to delete all the products in the database.
+     */
+    private void clearDatabase() {
+        int rowsDeleted = getContentResolver().delete(ProductEntry.CONTENT_URI, null, null);
+        if (rowsDeleted == 0) {
+            // Deletion failed
+            Toast.makeText(this, getString(R.string.toast_database_deletion_error), Toast.LENGTH_LONG).show();
+        } else {
+            // Deletion ok.
+            Toast.makeText(this, getString(R.string.toast_database_deletion_ok), Toast.LENGTH_LONG).show();
+        }
     }
 }

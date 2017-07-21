@@ -56,7 +56,7 @@ public class InventoryCursorAdapter extends CursorAdapter {
         // Read the Cursor and get current product information.
         String product = cursor.getString(cursor.getColumnIndex(ProductEntry.COLUMN_NAME_PRODUCT));
         String image = cursor.getString(cursor.getColumnIndex(ProductEntry.COLUMN_NAME_IMAGE));
-        String provider = cursor.getString(cursor.getColumnIndex(ProductEntry.COLUMN_NAME_SUPPLIERCONTACT));
+        String provider = cursor.getString(cursor.getColumnIndex(ProductEntry.COLUMN_NAME_SUPPLIER_CONTACT));
         Float price = cursor.getFloat(cursor.getColumnIndex(ProductEntry.COLUMN_NAME_PRICE));
         int quantity = cursor.getInt(cursor.getColumnIndex(ProductEntry.COLUMN_NAME_QUANTITY));
 
