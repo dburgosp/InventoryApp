@@ -149,6 +149,8 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
         mainListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
+
+
                 Intent intent = new Intent(MainActivity.this, ProductActivity.class);
 
                 // Create the URI "content://com.example.android.inventoryapp/products/id" and save
