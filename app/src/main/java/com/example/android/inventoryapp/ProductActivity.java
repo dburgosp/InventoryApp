@@ -5,6 +5,7 @@ import android.app.LoaderManager;
 import android.content.ContentValues;
 import android.content.CursorLoader;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.Loader;
 import android.database.Cursor;
 import android.net.Uri;
@@ -31,12 +32,14 @@ import android.widget.Toast;
 import com.example.android.inventoryapp.data.InventoryContract.ProductEntry;
 
 import java.text.DecimalFormat;
+import java.util.Locale;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
 public class ProductActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Cursor> {
 
+    private static final int INVENTORY_LOADER = 0;              // Identifier for the loader.
     // Annotate fields with @BindView and views ID for Butter Knife to find and automatically cast
     // the corresponding views.
     @BindView(R.id.product_name_edit_text)
@@ -63,12 +66,19 @@ public class ProductActivity extends AppCompatActivity implements LoaderManager.
     EditText supplierOrderQuantityEditText;
     @BindView(R.id.product_supplier_order_button)
     Button supplierOrderButton;
-
-    private static final int INVENTORY_LOADER = 0;              // Identifier for the loader.
+    @BindView(R.id.product_quantity_increase)
+    Button quantityIncreaseButton;
+    @BindView(R.id.product_quantity_decrease)
+    Button quantityDecreaseButton;
     private Uri currentProductUri = null;                       // URI of the current product, if exists one.
     private boolean unsavedChanges = false;                     // true if we are editing or creating a product.
     private String imageType = ProductEntry.IMAGE_TYPE_NONE;    // Current image type selected on spinner.
+    private String productName = "";                            // Name of the product.
+    private String productPrice = "";                           // Unit price for the product, formatted in euros and 2 decimals.
+    private int productQuantity = 0;                            // Current number of units in the database.
     private int orderQuantity = 1;                              // Number of units to order.
+    private String providerName = "";                           // Provider name.
+    private String providerEmail = "";                          // Provider e-mail.
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -79,6 +89,7 @@ public class ProductActivity extends AppCompatActivity implements LoaderManager.
         getOperationType();     // Determine if we are trying to insert or to update a product.
         setOnChangeListeners(); // Setup OnTouchListeners and OnKeyListeners to determine if there is unsaved data.
         setImageSpinner();      // Setup image selection spinner.
+        setupButtons();         // Setup buttons from managing quantity and emailing suppliers.
     }
 
     /**
@@ -192,14 +203,19 @@ public class ProductActivity extends AppCompatActivity implements LoaderManager.
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
         // Move to the first row of the cursor.
         if (data.moveToFirst()) {
+            // Show layouts for orders to supplier and for displaying the product quantity.
+            productStockLayout.setVisibility(View.VISIBLE);
+            supplierOrderLayout.setVisibility(View.VISIBLE);
+
             // Show product name.
-            productNameEditText.setText(data.getString(data.getColumnIndex(ProductEntry.COLUMN_NAME_PRODUCT)));
+            productName = data.getString(data.getColumnIndex(ProductEntry.COLUMN_NAME_PRODUCT));
+            productNameEditText.setText(productName);
 
             // Show price for the product. Prices are stored in euro cents, but displayed as euros
             // (2 decimals).
-            Float price = data.getFloat(data.getColumnIndex(ProductEntry.COLUMN_NAME_PRICE));
             DecimalFormat form = new DecimalFormat("0.00");
-            productPriceEditText.setText(form.format(price / 100));
+            productPrice = form.format(data.getFloat(data.getColumnIndex(ProductEntry.COLUMN_NAME_PRICE)) / 100);
+            productPriceEditText.setText(productPrice);
 
             // Show product description.
             productDescriptionEditText.setText(data.getString(data.getColumnIndex(ProductEntry.COLUMN_NAME_DESCRIPTION)));
@@ -250,19 +266,20 @@ public class ProductActivity extends AppCompatActivity implements LoaderManager.
             }
 
             // Show current quantity for the product.
-            productStockLayout.setVisibility(View.VISIBLE);
-            productQuantityTextView.setText(Integer.toString(data.getInt(data.getColumnIndex(ProductEntry.COLUMN_NAME_QUANTITY))));
+            productQuantity = data.getInt(data.getColumnIndex(ProductEntry.COLUMN_NAME_QUANTITY));
+            productQuantityTextView.setText(String.format(Locale.getDefault(), "%s", productQuantity));
 
             // Show product provider name.
-            supplierNameEditText.setText(data.getString(data.getColumnIndex(ProductEntry.COLUMN_NAME_SUPPLIER_CONTACT)));
+            providerName = data.getString(data.getColumnIndex(ProductEntry.COLUMN_NAME_SUPPLIER_CONTACT));
+            supplierNameEditText.setText(providerName);
 
             // Show product provider e-mail.
-            supplierEmailEditText.setText(data.getString(data.getColumnIndex(ProductEntry.COLUMN_NAME_SUPPLIER_EMAIL)));
+            providerEmail = data.getString(data.getColumnIndex(ProductEntry.COLUMN_NAME_SUPPLIER_EMAIL));
+            supplierEmailEditText.setText(providerEmail);
 
             // Show number of units for ordering to the supplier.
-            supplierOrderLayout.setVisibility(View.VISIBLE);
             orderQuantity = data.getInt(data.getColumnIndex(ProductEntry.COLUMN_NAME_SUPPLIER_ORDER_QUANTITY));
-            supplierOrderQuantityEditText.setText(Integer.toString(orderQuantity));
+            supplierOrderQuantityEditText.setText(String.format(Locale.getDefault(), "%s", orderQuantity));
             if (orderQuantity > 1)
                 supplierOrderButton.setText(getResources().getString(R.string.supplier_order_button, orderQuantity, "(s)"));
             else
@@ -350,10 +367,54 @@ public class ProductActivity extends AppCompatActivity implements LoaderManager.
         productDescriptionEditText.setOnKeyListener(OnKeyListener);
         supplierNameEditText.setOnKeyListener(OnKeyListener);
         supplierEmailEditText.setOnKeyListener(OnKeyListener);
-        supplierOrderQuantityEditText.setOnKeyListener(OnKeyListener);
+        supplierOrderQuantityEditText.setOnKeyListener(new View.OnKeyListener() {
+            /**
+             * Called when a hardware key is dispatched to a view.
+             *
+             * @param v       is the view the key has been dispatched to.
+             * @param keyCode is the code for the physical key that was pressed.
+             * @param event   is the KeyEvent object containing full information about the event.
+             * @return true if the listener has consumed the event, false otherwise.
+             */
+            @Override
+            public boolean onKey(View v, int keyCode, KeyEvent event) {
+                unsavedChanges = true;
+                if (!supplierOrderQuantityEditText.getText().toString().isEmpty()) {
+                    orderQuantity = Integer.parseInt(supplierOrderQuantityEditText.getText().toString());
+                    if (orderQuantity <= 100) {
+                        if (orderQuantity > 1)
+                            supplierOrderButton.setText(getResources().getString(R.string.supplier_order_button, orderQuantity, "(s)"));
+                        else {
+                            // Order quantity must be at least 1.
+                            orderQuantity = 1;
+                            supplierOrderQuantityEditText.setText(String.valueOf(orderQuantity));
+                            Toast.makeText(ProductActivity.this, getString(R.string.toast_order_quantity_min), Toast.LENGTH_SHORT).show();
+                        }
+                    } else {
+                        // Order quantity can be 100 at most.
+                        orderQuantity = 100;
+                        supplierOrderQuantityEditText.setText(String.valueOf(orderQuantity));
+                        Toast.makeText(ProductActivity.this, getString(R.string.toast_order_quantity_max), Toast.LENGTH_SHORT).show();
+                    }
+                } else {
+                    // Order quantity can't be empty.
+                    orderQuantity = 1;
+                    supplierOrderQuantityEditText.setText(String.valueOf(orderQuantity));
+                    Toast.makeText(ProductActivity.this, getString(R.string.toast_order_quantity_empty), Toast.LENGTH_SHORT).show();
+                }
 
-        // Create an OnTouchListener for setting unsavedChanges to true.
-        View.OnTouchListener onTouchListener = new View.OnTouchListener() {
+                // Set text for order button.
+                if (orderQuantity == 1)
+                    supplierOrderButton.setText(getResources().getString(R.string.supplier_order_button, orderQuantity, ""));
+                else
+                    supplierOrderButton.setText(getResources().getString(R.string.supplier_order_button, orderQuantity, "(s)"));
+
+                return false;
+            }
+        });
+
+        // Setup OnTouchListeners on the image spinner.
+        productImageSpinner.setOnTouchListener(new View.OnTouchListener() {
             /**
              * Called when a touch event is dispatched to a view. This allows listeners to get a
              * chance to respond before the target view.
@@ -367,10 +428,7 @@ public class ProductActivity extends AppCompatActivity implements LoaderManager.
                 unsavedChanges = true;
                 return false;
             }
-        };
-
-        // Setup OnTouchListeners on the image spinner.
-        productImageSpinner.setOnTouchListener(onTouchListener);
+        });
     }
 
     private void setImageSpinner() {
@@ -460,13 +518,24 @@ public class ProductActivity extends AppCompatActivity implements LoaderManager.
         values.put(ProductEntry.COLUMN_NAME_IMAGE, imageType);
         values.put(ProductEntry.COLUMN_NAME_SUPPLIER_CONTACT, supplierNameEditText.getText().toString().trim());
         values.put(ProductEntry.COLUMN_NAME_SUPPLIER_EMAIL, supplierEmailEditText.getText().toString().trim());
-        String productPrice = productPriceEditText.getText().toString().trim();
-        if (TextUtils.isEmpty(productPrice))
-            // Set price to 0 if it is empty.
-            values.put(ProductEntry.COLUMN_NAME_PRICE, 0);
-        else
-            // Store price in cents of euro.
-            values.put(ProductEntry.COLUMN_NAME_PRICE, Double.parseDouble(productPrice) * 100);
+
+        // Set product quantity to 0 if is negative.
+        if (!productQuantityTextView.getText().toString().trim().isEmpty())
+            productQuantity = Integer.parseInt(productQuantityTextView.getText().toString().trim());
+        if (productQuantity < 0) values.put(ProductEntry.COLUMN_NAME_QUANTITY, 0);
+        else values.put(ProductEntry.COLUMN_NAME_QUANTITY, productQuantity);
+
+        // Set order quantity to 1 if is lower than 1 or empty.
+        if (!supplierOrderQuantityEditText.getText().toString().trim().isEmpty())
+            orderQuantity = Integer.parseInt(supplierOrderQuantityEditText.getText().toString().trim());
+        if (orderQuantity < 1) orderQuantity = 1;
+        values.put(ProductEntry.COLUMN_NAME_SUPPLIER_ORDER_QUANTITY, orderQuantity);
+
+        // Set price to 0 if it is empty. Otherwise, store price in cents of euro.
+        if (!productPriceEditText.getText().toString().trim().isEmpty())
+            productPrice = productPriceEditText.getText().toString().trim();
+        if (TextUtils.isEmpty(productPrice)) values.put(ProductEntry.COLUMN_NAME_PRICE, 0);
+        else values.put(ProductEntry.COLUMN_NAME_PRICE, Double.parseDouble(productPrice) * 100);
 
         // Check data from given ContentValues object.
         int res = ProductEntry.checkContentValues(values);
@@ -598,5 +667,51 @@ public class ProductActivity extends AppCompatActivity implements LoaderManager.
                 Toast.makeText(this, getString(R.string.toast_product_deletion_ok), Toast.LENGTH_SHORT).show();
             }
         }
+    }
+
+    /**
+     * Helper method to define the behaviour of every button in activity_product.xml.
+     */
+    private void setupButtons() {
+        // Order button.
+        supplierOrderButton.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                String[] email = {providerEmail};
+                Intent intent = new Intent(Intent.ACTION_SEND);
+                intent.setData(Uri.parse("mailto:"));
+                intent.putExtra(Intent.EXTRA_EMAIL, email);
+                intent.putExtra(Intent.EXTRA_SUBJECT, getString(R.string.email_subject));
+                intent.putExtra(Intent.EXTRA_TEXT, getResources().getString(R.string.email_text, providerName, productName, productPrice, orderQuantity));
+                intent.setType("message/rfc822");
+                startActivity(Intent.createChooser(intent, "Email "));
+            }
+        });
+
+        // Increase quantity button.
+        quantityIncreaseButton.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                // Increase quantity and update product into database.
+                productQuantityTextView.setText(String.format(Locale.getDefault(), "%s", ++productQuantity));
+                if (!saveProduct())
+                    // If updating has failed, restore productQuantity.
+                    if (productQuantity > 0) {
+                        productQuantityTextView.setText(String.format(Locale.getDefault(), "%s", --productQuantity));
+                    }
+            }
+        });
+
+        // Decrease quantity button.
+        quantityDecreaseButton.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                if (productQuantity > 0) {
+                    // Decrease quantity and update product into database.
+                    productQuantityTextView.setText(String.format(Locale.getDefault(), "%s", --productQuantity));
+                    if (!saveProduct()) {
+                        // If updating has failed, restore productQuantity.
+                        productQuantityTextView.setText(String.format(Locale.getDefault(), "%s", ++productQuantity));
+                    }
+                }
+            }
+        });
     }
 }

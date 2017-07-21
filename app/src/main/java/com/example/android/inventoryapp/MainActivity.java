@@ -26,14 +26,13 @@ import butterknife.ButterKnife;
 
 public class MainActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Cursor> {
 
+    private static final int INVENTORY_LOADER = 0;  // Identifier for the loader.
     // Annotate fields with @BindView and views ID for Butter Knife to find and automatically cast
     // the corresponding views.
     @BindView(R.id.main_empty_database)
     RelativeLayout emptyDatabaseTextView;
     @BindView(R.id.main_list_view)
     ListView mainListView;
-
-    private static final int INVENTORY_LOADER = 0;  // Identifier for the loader.
     InventoryCursorAdapter inventoryCursorAdapter;  // Adapter for the ListView.
 
     @Override
@@ -150,6 +149,8 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
         mainListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
+
+
                 Intent intent = new Intent(MainActivity.this, ProductActivity.class);
 
                 // Create the URI "content://com.example.android.inventoryapp/products/id" and save
