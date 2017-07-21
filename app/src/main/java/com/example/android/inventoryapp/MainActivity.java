@@ -26,14 +26,13 @@ import butterknife.ButterKnife;
 
 public class MainActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Cursor> {
 
+    private static final int INVENTORY_LOADER = 0;  // Identifier for the loader.
     // Annotate fields with @BindView and views ID for Butter Knife to find and automatically cast
     // the corresponding views.
     @BindView(R.id.main_empty_database)
     RelativeLayout emptyDatabaseTextView;
     @BindView(R.id.main_list_view)
     ListView mainListView;
-
-    private static final int INVENTORY_LOADER = 0;  // Identifier for the loader.
     InventoryCursorAdapter inventoryCursorAdapter;  // Adapter for the ListView.
 
     @Override
@@ -192,7 +191,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
     private void clearDatabase() {
         int rowsDeleted = getContentResolver().delete(ProductEntry.CONTENT_URI, null, null);
         if (rowsDeleted == 0) {
-            // Deletion failed
+            // Deletion failed.
             Toast.makeText(this, getString(R.string.toast_database_deletion_error), Toast.LENGTH_LONG).show();
         } else {
             // Deletion ok.

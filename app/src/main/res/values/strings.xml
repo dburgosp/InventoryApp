@@ -69,8 +69,11 @@
     <string name="toast_missing_supplier_order_quantity">Supplier order quantity must not be empty</string>
     <string name="toast_product_deletion_ok">Product deleted correctly</string>
     <string name="toast_product_deletion_error">Error deleting product</string>
-    <string name="toast_database_deletion_ok">Database cleared. All products have been deleted.</string>
+    <string name="toast_database_deletion_ok">All products have been deleted from database</string>
     <string name="toast_database_deletion_error">Error clearing database information</string>
+    <string name="toast_order_quantity_min">Quantity for orders must be 1 at least</string>
+    <string name="toast_order_quantity_max">Quantity for orders can be 100 at most</string>
+    <string name="toast_order_quantity_empty">Quantity for orders can\'t be empty</string>
 
     <!-- Texts for alert dialogs -->
     <string name="dialog_database_deletion">Are you really sure to delete all the products? All database information will be lost and you will not be able to undo this operation.</string>
@@ -78,8 +81,15 @@
     <string name="dialog_database_deletion_negative">No, cancel deletion!!!</string>
     <string name="dialog_unsaved_changes">There are unsaved changes. Do you really want to discard them?</string>
     <string name="dialog_unsaved_changes_positive">Yes, discard unsaved changes</string>
-    <string name="dialog_unsaved_changes_negative">No, I want to keep on editing</string>
+    <string name="dialog_unsaved_changes_negative">No, I\'ll keep on editing</string>
     <string name="dialog_product_deletion">Are you really sure to delete the current product?</string>
     <string name="dialog_product_deletion_positive">Yes, I want to delete it</string>
     <string name="dialog_product_deletion_negative">No, cancel deletion</string>
+
+    <!-- Texts for emails to suppliers -->
+    <string name="email_subject">Purchase Order</string>
+    <string name="email_text">Dear <xliff:g example="Supplier" id="string">%s</xliff:g>,\n\nWe should like you to supply the following consignment:\n\n
+          Article: <xliff:g example="Product" id="string">%s</xliff:g>\n
+          Price/unit: <xliff:g example="1.00" id="string">%s</xliff:g> €\n
+          Quantity: <xliff:g example="1" id="number">%d</xliff:g>\n\nWe should require you to return the order acceptance together with delivery dates. Delivery of goods should be door to door to our warehouse, carriage and packaging paid.\n\nWe should be grateful if you would advise us by post: the date of dispatch, weight and transport agency involved.\n\nAwaiting your reply,\n\nDavid.</string>
 </resources>

@@ -4,11 +4,15 @@ package com.example.android.inventoryapp;
  * Created by David on 18/07/2017.
  */
 
+import android.content.ContentUris;
+import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
+import android.net.Uri;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.CursorAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -52,13 +56,13 @@ public class InventoryCursorAdapter extends CursorAdapter {
      *                correct position.
      */
     @Override
-    public void bindView(View view, Context context, Cursor cursor) {
+    public void bindView(View view, final Context context, final Cursor cursor) {
         // Read the Cursor and get current product information.
         String product = cursor.getString(cursor.getColumnIndex(ProductEntry.COLUMN_NAME_PRODUCT));
         String image = cursor.getString(cursor.getColumnIndex(ProductEntry.COLUMN_NAME_IMAGE));
         String provider = cursor.getString(cursor.getColumnIndex(ProductEntry.COLUMN_NAME_SUPPLIER_CONTACT));
         Float price = cursor.getFloat(cursor.getColumnIndex(ProductEntry.COLUMN_NAME_PRICE));
-        int quantity = cursor.getInt(cursor.getColumnIndex(ProductEntry.COLUMN_NAME_QUANTITY));
+        final int quantity = cursor.getInt(cursor.getColumnIndex(ProductEntry.COLUMN_NAME_QUANTITY));
 
         // Show product name.
         TextView productTextView = (TextView) view.findViewById(R.id.list_item_product);
@@ -80,5 +84,22 @@ public class InventoryCursorAdapter extends CursorAdapter {
         // Show current quantity for the product.
         TextView quantityTextView = (TextView) view.findViewById(R.id.list_item_quantity);
         quantityTextView.setText(context.getResources().getString(R.string.list_item_units) + " " + quantity);
+
+        // "Sale 1 unit" button.
+        Button saleButton = (Button) view.findViewById(R.id.list_item_sell);
+        saleButton.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                if (quantity > 0) {
+                    // Create a ContentValues object to update the product quantity into the database.
+                    ContentValues values = new ContentValues();
+                    values.put(ProductEntry.COLUMN_NAME_QUANTITY, quantity - 1);
+
+                    // Create URI pointing to the current product and update it with given ContentValues.
+                    int id = cursor.getInt(cursor.getColumnIndex(ProductEntry.COLUMN_NAME_ID));
+                    Uri uri = ContentUris.withAppendedId(ProductEntry.CONTENT_URI, id);
+                    context.getContentResolver().update(uri, values, null, null);
+                }
+            }
+        });
     }
 }
