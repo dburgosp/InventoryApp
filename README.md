@@ -1,5 +1,5 @@
 # Inventory App
-This is a simple Android Studio project for the [Android Basics Nanodegree](https://www.udacity.com/course/android-basics-nanodegree-by-google--nd803) by Udacity and Google.
+This is a simple Android Studio project for the [Android Basics Nanodegree](https://www.udacity.com/course/android-basics-nanodegree-by-google--nd803) by Udacity and Google. It implements a very basic and limited functionality (only for educational purpose) and uses a sample SQLite database with a single table. 
 
 Some screen captures:
 
