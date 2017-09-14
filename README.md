@@ -3,21 +3,7 @@ This is a simple Android Studio project for the [Android Basics Nanodegree](http
 
 Some screen captures:
 
-![Empty database](https://github.com/dburgosp/InventoryApp/blob/master/img_empty_database.jpg?raw=true)
-
-![New product](https://github.com/dburgosp/InventoryApp/blob/master/img_new_product.jpg?raw=true)
-
-![Product list](https://github.com/dburgosp/InventoryApp/blob/master/img_products_list.jpg?raw=true)
-
-![Edit product](https://github.com/dburgosp/InventoryApp/blob/master/img_edit_product.jpg?raw=true)
-
-![Closing edit layout](https://github.com/dburgosp/InventoryApp/blob/master/img_exit_editing.jpg?raw=true)
-
-![Order to supplier](https://github.com/dburgosp/InventoryApp/blob/master/img_supplier_order.jpg?raw=true)
-
-![Delete all products](https://github.com/dburgosp/InventoryApp/blob/master/img_delete_all.jpg?raw=true)
-
-![Delete one product](https://github.com/dburgosp/InventoryApp/blob/master/img_delete_product.jpg?raw=true)
+<IMG src="https://github.com/dburgosp/InventoryApp/blob/master/img_empty_database.jpg?raw=true" width="150" height="279" title="Empty Database" alt="Empty Database"/> <IMG src="https://github.com/dburgosp/InventoryApp/blob/master/img_new_product.jpg?raw=true" width="150" height="279" title="New product" alt="New product"/> <IMG src="https://github.com/dburgosp/InventoryApp/blob/master/img_products_list.jpg?raw=true" width="150" height="279" title="Product list" alt="Product list"/> <IMG src="https://github.com/dburgosp/InventoryApp/blob/master/img_edit_product.jpg?raw=true" width="150" height="279" title="Edit product" alt="Edit product"/> <IMG src="https://github.com/dburgosp/InventoryApp/blob/master/img_exit_editing.jpg?raw=true" width="150" height="279" title="Closing edit layout" alt="Closing edit layout"/> <IMG src="https://github.com/dburgosp/InventoryApp/blob/master/img_supplier_order.jpg?raw=true" width="150" height="279" title="Order to supplier" alt="Order to supplier"/> <IMG src="https://github.com/dburgosp/InventoryApp/blob/master/img_delete_all.jpg?raw=true" width="150" height="279" title="Delete all products" alt="Delete all products"/> <IMG src="https://github.com/dburgosp/InventoryApp/blob/master/img_delete_product.jpg?raw=true" width="150" height="279" title="Delete one product" alt="Delete one product"/>
 
 ## Project Overview
 This project is a chance for you to combine and practice everything you learned in this section of the Nanodegree program. You will be making an app to track a store's inventory.
