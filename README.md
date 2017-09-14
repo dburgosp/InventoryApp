@@ -56,4 +56,4 @@ The goal is to design and create the structure of an Inventory App which would a
 2. **Format**. The code is properly formatted i.e. there are no unnecessary blank lines; there are no unused variables or methods; there is no commented out code. The code also has proper indentation when defining variables and methods.
 
 ## Notes
-I have used [Butterknife library](http://jakewharton.github.io/butterknife/) for view injection in order to make my code less and more clear.
+Despite of point 10 in section "Functionality" (the use of external libraries for core functionality will not be permitted to complete this project) but following the guidelines of the course mentors, I have used [Butterknife library](http://jakewharton.github.io/butterknife/) for view injection in order to make my code less and more clear.
