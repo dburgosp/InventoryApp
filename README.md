@@ -1,14 +1,13 @@
 # Inventory App
-This is a simple Android Studio project for the [Android Basics Nanodegree](https://www.udacity.com/course/android-basics-nanodegree-by-google--nd803) by Udacity and Google. It implements a very basic and limited functionality (only for educational purpose) and uses a sample SQLite database with a single table. 
+This is a simple Android Studio project for the [Android Basics Nanodegree](https://www.udacity.com/course/android-basics-nanodegree-by-google--nd803) by Udacity and Google. It implements a very basic and limited functionality (only for educational purpose) and uses a sample SQLite database with a single table.
+
+The goal is to design and create the structure of an Inventory App which would allow a store to keep track of its inventory of products. The app will need to store information about price, quantity available, supplier, and a picture of the product. It will also need to allow the user to track sales and shipments and make it easy for the user to order more from the listed supplier.
 
 Some screen captures:
 
 <IMG src="https://github.com/dburgosp/InventoryApp/blob/master/img_empty_database.jpg?raw=true" width="150" height="279" title="Empty Database" alt="Empty Database"/> <IMG src="https://github.com/dburgosp/InventoryApp/blob/master/img_new_product.jpg?raw=true" width="150" height="279" title="New product" alt="New product"/> <IMG src="https://github.com/dburgosp/InventoryApp/blob/master/img_products_list.jpg?raw=true" width="150" height="279" title="Product list" alt="Product list"/> <IMG src="https://github.com/dburgosp/InventoryApp/blob/master/img_edit_product.jpg?raw=true" width="150" height="279" title="Edit product" alt="Edit product"/> <IMG src="https://github.com/dburgosp/InventoryApp/blob/master/img_exit_editing.jpg?raw=true" width="150" height="279" title="Closing edit layout" alt="Closing edit layout"/> <IMG src="https://github.com/dburgosp/InventoryApp/blob/master/img_supplier_order.jpg?raw=true" width="150" height="279" title="Order to supplier" alt="Order to supplier"/> <IMG src="https://github.com/dburgosp/InventoryApp/blob/master/img_delete_all.jpg?raw=true" width="150" height="279" title="Delete all products" alt="Delete all products"/> <IMG src="https://github.com/dburgosp/InventoryApp/blob/master/img_delete_product.jpg?raw=true" width="150" height="279" title="Delete one product" alt="Delete one product"/>
 
-## Project Overview
-This project is a chance for you to combine and practice everything you learned in this section of the Nanodegree program. You will be making an app to track a store's inventory.
-
-The goal is to design and create the structure of an Inventory App which would allow a store to keep track of its inventory of products. The app will need to store information about price, quantity available, supplier, and a picture of the product. It will also need to allow the user to track sales and shipments and make it easy for the user to order more from the listed supplier.
+# Project Specification
 
 ## Layout
 
