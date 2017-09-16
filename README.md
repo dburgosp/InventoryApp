@@ -26,7 +26,7 @@ Some screen captures:
 
 ## Functionality
 1. **Runtime Errors**. The code runs without errors. For example, when user inputs product information (quantity, price, name, image), instead of erroring out, the app includes logic to validate that no null values are accepted. If a null value is inputted, add a Toast that prompts the user to input the correct information before they can continue.
-2. **ListView Population**. The listView populates with the current products stored in the table.
+2. **ListView Population**. The [ListView](https://developer.android.com/reference/android/widget/ListView.html) populates with the current products stored in the table.
 3. **Add product button**. The Add product button prompts the user for information about the product and a picture, each of which are then properly stored in the table.
 4. **Input Validation**. User input is validated. In particular, empty product information is not accepted. If user inputs product information (quantity, price, name, image), instead of erroring out, the app includes logic to validate that no null values are accepted. If a null value is inputted, a [Toast](https://developer.android.com/reference/android/widget/Toast.html) prompts the user to input the correct information before they can continue.
 5. **Sale Button**. In the activity that displays a list of all available inventory, each List Item contains a Sale Button which reduces the available quantity for that particular product by one (the app includes logic so that no negative quantities are displayed).
