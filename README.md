@@ -1,5 +1,5 @@
 # Inventory App
-This is a simple Android Studio project for the [Android Basics Nanodegree](https://www.udacity.com/course/android-basics-nanodegree-by-google--nd803) by Udacity and Google. It implements a very basic and limited functionality (only for educational purpose) and uses a sample SQLite database with a single table.
+This is a simple Android Studio project for the [Android Basics Nanodegree](https://www.udacity.com/course/android-basics-nanodegree-by-google--nd803) by Udacity and Google. It implements a very basic and limited functionality (only for educational purpose) and uses a sample [SQLite database](https://developer.android.com/reference/android/database/sqlite/package-summary.html) with a single table.
 
 The goal is to design and create the structure of an Inventory App which would allow a store to keep track of its inventory of products. The app will need to store information about price, quantity available, supplier, and a picture of the product. It will also need to allow the user to track sales and shipments and make it easy for the user to order more from the listed supplier.
 
@@ -12,7 +12,7 @@ Some screen captures:
 ## Layout
 
 1. **Overall Layout**. The app contains a list of current products and a button to add a new product.
-2. **List Item Layout**. Each list item displays the product name, current quantity, and price. Each list item also contains a Sale Button that reduces the quantity by one (include logic so that no negative quantities are displayed).
+2. **List Item Layout**. Each list item displays the product name, current quantity, and price. Each list item also contains a Sale Button that reduces the quantity by one (the app includes logic so that no negative quantities are displayed).
 3. **Detail Layout**:
    * The Detail Layout for each item displays the remainder of the information stored in the database.
    * The Detail Layout contains buttons that increase and decrease the available quantity displayed.
@@ -22,19 +22,19 @@ Some screen captures:
    * Text sizes are defined in sp.
    * Lengths are defined in dp.
    * Padding and margin is used appropriately, such that the views are not crammed up against each other.
-5. **Default Textview**. When there is no information to display in the database, the layout displays a TextView with instructions on how to populate the database.
+5. **Default Textview**. When there is no information to display in the database, the layout displays a [TextView](https://developer.android.com/reference/android/widget/TextView.html) with instructions on how to populate the database.
 
 ## Functionality
 1. **Runtime Errors**. The code runs without errors. For example, when user inputs product information (quantity, price, name, image), instead of erroring out, the app includes logic to validate that no null values are accepted. If a null value is inputted, add a Toast that prompts the user to input the correct information before they can continue.
 2. **ListView Population**. The listView populates with the current products stored in the table.
 3. **Add product button**. The Add product button prompts the user for information about the product and a picture, each of which are then properly stored in the table.
-4. **Input Validation**. User input is validated. In particular, empty product information is not accepted. If user inputs product information (quantity, price, name, image), instead of erroring out, the app includes logic to validate that no null values are accepted. If a null value is inputted, add a Toast that prompts the user to input the correct information before they can continue.
-5. **Sale Button**. In the activity that displays a list of all available inventory, each List Item contains a Sale Button which reduces the available quantity for that particular product by one (include logic so that no negative quantities are displayed).
+4. **Input Validation**. User input is validated. In particular, empty product information is not accepted. If user inputs product information (quantity, price, name, image), instead of erroring out, the app includes logic to validate that no null values are accepted. If a null value is inputted, a [Toast](https://developer.android.com/reference/android/widget/Toast.html) prompts the user to input the correct information before they can continue.
+5. **Sale Button**. In the activity that displays a list of all available inventory, each List Item contains a Sale Button which reduces the available quantity for that particular product by one (the app includes logic so that no negative quantities are displayed).
 6. **Detail View Intent**. Clicking on the rest of each list item sends the user to the detail screen for the correct product.
-7. **Modify Quantity Buttons**. The Modify Quantity Buttons in the detail view properly increase and decrease the quantity available for the correct product. The student may also add input for how much to increase or decrease the quantity by.
-8. **Order Button**. The ‘order more’ button sends an intent to either a phone app or an email app to contact the supplier using the information stored in the database.
+7. **Modify Quantity Buttons**. The Modify Quantity Buttons in the detail view properly increase and decrease the quantity available for the correct product.
+8. **Order Button**. The ‘order more’ button sends an [intent](https://developer.android.com/reference/android/content/Intent.html) to an email app to contact the supplier using the information stored in the database.
 9. **Delete Button**. The delete button prompts the user for confirmation and, if confirmed, deletes the product record entirely and sends the user back to the main activity.
-10. **External Libraries and Packages**. The intent of this project is to give you practice writing raw Java code using the necessary classes provided by the Android framework; therefore, the use of external libraries for core functionality will not be permitted to complete this project.
+10. **External Libraries and Packages**. The intent of this project is to practice writing raw Java code using the necessary classes provided by the Android framework; therefore, the use of external libraries for core functionality will not be permitted to complete this project.
 
 ## Code Readability
 1. **Naming Conventions**. All variables, methods, and resource IDs are descriptively named such that another developer reading the code can easily understand their function.
